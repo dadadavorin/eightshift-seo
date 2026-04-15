@@ -14,7 +14,6 @@ use EightshiftSeo\AdminMenus\AdminSettingsAdminMenu;
 use EightshiftSeo\Config\Config;
 use EightshiftSeo\Options\Options;
 use EightshiftSeoVendor\EightshiftLibs\Enqueue\Admin\AbstractEnqueueAdmin;
-use EightshiftSeoVendor\EightshiftLibs\Exception\InvalidBlock;
 
 /**
  * EnqueueAdmin class — loads JS/CSS only on the SEO settings page and in the block editor.
@@ -87,6 +86,12 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 	/**
 	 * Enqueue scripts for the settings page, with inline localization data.
 	 *
+	 * Does not call parent::enqueueAdminScripts() because that method resolves
+	 * the asset URL through the eightshift manifest cache, which requires a
+	 * generated public/manifest.json that @wordpress/scripts does not produce.
+	 * Instead, the URL is built directly with plugins_url() so the plugin works
+	 * on any installation without a build-time manifest.
+	 *
 	 * @return void
 	 */
 	public function enqueueAdminScripts(): void
@@ -95,11 +100,22 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 			return;
 		}
 
-		parent::enqueueAdminScripts();
+		$handle = $this->getAdminScriptHandle();
+		$pluginFile = \dirname(__DIR__, 3) . '/eightshift-seo.php';
+
+		\wp_register_script(
+			$handle,
+			\plugins_url('public/applicationAdmin.js', $pluginFile),
+			$this->getAdminScriptDependencies(),
+			$this->getAssetsVersion(),
+			\is_wp_version_compatible('6.3') ? $this->scriptArgs() : $this->scriptInFooter()
+		);
+
+		\wp_enqueue_script($handle);
 
 		$localization = \wp_json_encode($this->buildLocalization());
 		\wp_add_inline_script(
-			$this->getAdminScriptHandle(),
+			$handle,
 			"const esSeoLocalization = {$localization}",
 			'before'
 		);
@@ -129,20 +145,12 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 			return;
 		}
 
-		$handle  = "{$this->getAssetsPrefix()}-editor-scripts";
-		$version = $this->getAssetsVersion();
+		$handle     = "{$this->getAssetsPrefix()}-editor-scripts";
+		$version    = $this->getAssetsVersion();
+		$pluginFile = \dirname(__DIR__, 3) . '/eightshift-seo.php';
 
-		try {
-			$editorJsPath = $this->setAssetsItem('applicationEditor.js');
-		} catch (InvalidBlock $e) {
-			$editorJsPath = '';
-		}
-
-		try {
-			$editorCssPath = $this->setAssetsItem('applicationEditor.css');
-		} catch (InvalidBlock $e) {
-			$editorCssPath = '';
-		}
+		$editorJsPath  = \plugins_url('public/applicationEditor.js', $pluginFile);
+		$editorCssPath = '';
 
 		if ($editorJsPath) {
 			\wp_register_script(
