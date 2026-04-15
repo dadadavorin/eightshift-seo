@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * The file that registers the es_seo_max_video_preview post meta field.
+ *
+ * @package EightshiftSeo\CustomMeta
+ */
+
+declare(strict_types=1);
+
+namespace EightshiftSeo\CustomMeta;
+
+use EightshiftSeo\Options\Options;
+use EightshiftSeoVendor\EightshiftLibs\Services\ServiceInterface;
+
+/**
+ * SeoMaxVideoPreviewMeta class — registers the max-video-preview robots directive value.
+ *
+ * -1 means no limit (Google default). Any non-negative integer limits the video
+ * preview duration in seconds. Maps to the max-video-preview:<number> robots directive.
+ */
+class SeoMaxVideoPreviewMeta implements ServiceInterface
+{
+	/**
+	 * Register all the hooks.
+	 *
+	 * @return void
+	 */
+	public function register(): void
+	{
+		\add_action('init', [$this, 'registerMeta']);
+	}
+
+	/**
+	 * Register the meta field for every public post type.
+	 *
+	 * @return void
+	 */
+	public function registerMeta(): void
+	{
+		foreach (Options::getPublicPostTypes() as $postType) {
+			\register_meta('post', Options::getMetaKey('maxVideoPreview'), [
+				'object_subtype' => $postType,
+				'show_in_rest'   => [
+					'schema' => [
+						'type'    => 'integer',
+						'minimum' => -1,
+					],
+				],
+				'single'        => true,
+				'type'          => 'integer',
+				'default'       => -1,
+				'auth_callback' => static fn () => \current_user_can('edit_posts'),
+			]);
+		}
+	}
+}

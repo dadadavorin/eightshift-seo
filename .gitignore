@@ -1,0 +1,20 @@
+# JS dependencies
+node_modules/
+
+# Generated at runtime by AbstractMain (DI container + service class list)
+eightshift/EightshiftSeoCompiledContainer.php
+eightshift/EightshiftSeoServiceClasses.json
+
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# npm / build logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

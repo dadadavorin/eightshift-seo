@@ -1,0 +1,17 @@
+{
+	"$schema": "https://raw.githubusercontent.com/infinum/eightshift-frontend-libs-tailwind/main/schemas/component.json",
+	"title": "Admin Settings",
+	"componentName": "admin-settings",
+	"componentClass": "admin-settings",
+	"componentId": "es-seo-admin-root",
+	"attributes": {
+		"adminSettingsTitle": {
+			"type": "string",
+			"default": "Eightshift SEO"
+		},
+		"adminSettingsType": {
+			"type": "string",
+			"default": "manage"
+		}
+	}
+}

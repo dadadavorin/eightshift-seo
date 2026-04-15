@@ -1,0 +1,202 @@
+<?php
+
+/**
+ * File containing an abstract class for holding Media functionality.
+ *
+ * @package EightshiftLibs\Media
+ *
+ * @license MIT
+ * Modified by eightshift-meilisearch on 01-April-2026 using {@see https://github.com/BrianHenryIE/strauss}.
+ */
+
+declare(strict_types=1);
+
+namespace EightshiftSeoVendor\EightshiftLibs\Media;
+
+use EightshiftSeoVendor\EightshiftLibs\Services\ServiceInterface;
+use EightshiftSeoVendor\EightshiftLibs\Helpers\Helpers;
+use Exception;
+use SimpleXMLElement;
+use WP_Error;
+use WP_Post;
+
+/**
+ * Abstract class Media class.
+ */
+abstract class AbstractMedia implements ServiceInterface
+{
+	/**
+	 * Enable additional uploads in media.
+	 *
+	 * @param array<object|string> $mimes Load all mimes types.
+	 * @return array<object|string>       Return original and updated.
+	 */
+	public function enableMimeTypes(array $mimes): array
+	{
+		$mimes['svg']  = 'image/svg+xml';
+		$mimes['json'] = 'application/json';
+		return $mimes;
+	}
+
+	/**
+	 * Enable SVG preview in Media Library.
+	 *
+	 * @param array<mixed> $response   Array of prepared attachment data.
+	 * @param int|object $attachment Attachment ID or object.
+	 * @return array<object>|false Array of attachment details, or void if the parameter does not correspond to an attachment.
+	 */
+	public function enableSvgMediaLibraryPreview($response, $attachment)
+	{
+		if ($response['type'] === 'image' && $response['subtype'] === 'svg+xml' && \class_exists('SimpleXMLElement')) {
+			try {
+				$path = \get_attached_file($attachment instanceof WP_Post ? $attachment->ID : $attachment);
+
+				if (\file_exists($path)) {
+					$svgContent = \file($path);
+					$svgContent = \implode(' ', $svgContent);
+
+					if (!Helpers::isValidXml($svgContent)) {
+						// Translators: %s represents the filename, eg. demo.json.
+						new WP_Error(\sprintf(\esc_html__('Error: File invalid: %s', 'eightshift-libs'), $path));
+						return false;
+					}
+
+					$svg    = new SimpleXMLElement($svgContent);
+					$src    = $response['url'];
+					$width  = (int) $svg['width'];
+					$height = (int) $svg['height'];
+
+					// media gallery.
+					$response['image'] = \compact('src', 'width', 'height');
+					$response['thumb'] = \compact('src', 'width', 'height');
+
+					// media single.
+					$response['sizes']['full'] = [
+						'height'      => $height,
+						'width'       => $width,
+						'url'         => $src,
+						'orientation' => $height > $width ? 'portrait' : 'landscape',
+					];
+				}
+			} catch (Exception $e) {
+				// Translators: %s represents the error text.
+				new WP_Error(\sprintf(\esc_html__('Error: %s', 'eightshift-libs'), $e));
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Check if SVG is valid on Add New Media Page.
+	 *
+	 * @param array<object|string> $response Response array.
+	 * @return array<mixed>
+	 */
+	public function validateSvgOnUpload($response)
+	{
+		if ($response['type'] === 'image/svg+xml' && \class_exists('SimpleXMLElement')) {
+			$path = $response['tmp_name'];
+
+			$svgContent = \file($path);
+			$svgContent = \implode(' ', $svgContent);
+
+			if (\file_exists($path)) {
+				if (!Helpers::isValidXml($svgContent)) {
+					return [
+						'size' => $response,
+						'name' => $response['name'],
+					];
+				}
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Enable SVG file upload.
+	 *
+	 * @param array<object>  $filetypeExtData Array fot output data.
+	 * @param string $file              Full path to the file.
+	 * @param string $filename          The name of the file (may differ from $file due to $file being in a tmp directory).
+	 * @return array<object|string>
+	 */
+	public function enableSvgUpload($filetypeExtData, $file, $filename): array
+	{
+		if (\substr($filename, -4) === '.svg') {
+			$filetypeExtData['ext']  = 'svg';
+			$filetypeExtData['type'] = 'image/svg+xml';
+		}
+		return $filetypeExtData;
+	}
+
+	/**
+	 * Enable JSON file upload.
+	 *
+	 * @param array<object>  $filetypeExtData Array fot output data.
+	 * @param string $file              Full path to the file.
+	 * @param string $filename          The name of the file (may differ from $file due to $file being in a tmp directory).
+	 * @return array<object|string>
+	 */
+	public function enableJsonUpload($filetypeExtData, $file, $filename): array
+	{
+		if (\substr($filename, -5) === '.json') {
+			$filetypeExtData['ext']  = 'json';
+			$filetypeExtData['type'] = 'application/json';
+		}
+		return $filetypeExtData;
+	}
+
+	/**
+	 * Convert media to WebP on upload.
+	 *
+	 * @param array<string, mixed> $upload Upload data.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function convertMediaToWebP(array $upload): array
+	{
+		try {
+			$ext = \pathinfo($upload['file'], \PATHINFO_EXTENSION);
+
+			if (!\in_array($ext, $this->getWebPAllowedExt(), true)) {
+				return $upload;
+			}
+
+			$webpPath = Helpers::convertMediaToWebPByPath($upload['file'], $this->getMediaWebPQuality());
+
+			$output = [
+				'file' => $webpPath['newFullPath'],
+				'url' => $webpPath['newUrl'],
+				'type' => $webpPath['newType'],
+			];
+
+			\wp_delete_file($upload['file']);
+
+			return $output;
+		} catch (Exception $e) {
+			return $upload;
+		}
+	}
+
+	/**
+	 * WebP Quality compression range 0-100.
+	 *
+	 * @return integer
+	 */
+	protected function getMediaWebPQuality(): int
+	{
+		return 80;
+	}
+
+	/**
+	 * Get WebP allowed extensions.
+	 *
+	 * @return array<string>
+	 */
+	protected function getWebPAllowedExt(): array
+	{
+		return ['jpg', 'jpeg', 'png', 'bmp'];
+	}
+}

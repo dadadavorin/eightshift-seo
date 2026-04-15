@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * The WpCliExample specific functionality.
+ *
+ * @package EightshiftLibs\WpCli
+ */
+
+declare(strict_types=1);
+
+namespace %g_namespace%\WpCli;
+
+use %g_namespace%\Config\Config;
+use %g_use_libs%\Services\ServiceCliInterface;
+use WP_CLI;
+
+/**
+ * Class WpCliExample
+ */
+class WpCliExample implements ServiceCliInterface
+{
+	/**
+	 * CLI command name
+	 *
+	 * @var string
+	 */
+	public const COMMAND_NAME = '%command_name%';
+
+	/**
+	 * Register method for WP-CLI command
+	 *
+	 * @return void
+	 */
+	public function register(): void
+	{
+		\add_action('cli_init', [$this, 'registerCommand']);
+	}
+
+	/**
+	 * Register actual command in WP-CLI.
+	 *
+	 * @return void
+	 */
+	public function registerCommand(): void
+	{
+		WP_CLI::add_command(
+			Config::getProjectName() . ' ' . self::COMMAND_NAME,
+			\get_class($this),
+			$this->getDocs()
+		);
+	}
+
+	/**
+	 * Get WP-CLI command doc
+	 *
+	 * @return array<string, array<int, array<string, bool|string>>|string>
+	 */
+	public function getDocs(): array
+	{
+		return [
+			'shortdesc' => 'Generates custom WP-CLI command in your project.'
+		];
+	}
+
+	/* @phpstan-ignore-next-line */
+	public function __invoke(array $args, array $assocArgs) // phpcs:ignore Eightshift.Commenting.FunctionComment.WrongStyle
+	{
+		// Place your logic here.
+	}
+}

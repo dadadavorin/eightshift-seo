@@ -1,0 +1,27 @@
+{
+	"name": "infinum/eightshift-seo",
+	"description": "Lightweight SEO plugin for Eightshift projects.",
+	"type": "wordpress-plugin",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Team Eightshift",
+			"email": "team@eightshift.com",
+			"homepage": "https://eightshift.com/"
+		}
+	],
+	"require": {
+		"php": "^8.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"EightshiftSeo\\": "src/"
+		}
+	},
+	"config": {
+		"optimize-autoloader": true,
+		"platform": {
+			"php": "8.4"
+		}
+	}
+}

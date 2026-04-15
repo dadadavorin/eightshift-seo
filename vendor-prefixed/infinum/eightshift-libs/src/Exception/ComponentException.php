@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * Component exception class
+ *
+ * File containing the failure exception class when trying to locate a template that doesn't exist.
+ *
+ * @package EightshiftLibs\Exception
+ *
+ * @license MIT
+ * Modified by eightshift-meilisearch on 01-April-2026 using {@see https://github.com/BrianHenryIE/strauss}.
+ */
+
+declare(strict_types=1);
+
+namespace EightshiftSeoVendor\EightshiftLibs\Exception;
+
+use InvalidArgumentException;
+
+/**
+ * Class ComponentException
+ */
+final class ComponentException extends InvalidArgumentException implements GeneralExceptionInterface
+{
+	/**
+	 * Throws exception if ensure_string argument is invalid.
+	 *
+	 * @param mixed $variable Variable that's of invalid type.
+	 *
+	 * @return static
+	 */
+	public static function throwNotStringOrArray($variable): ComponentException
+	{
+		if (\gettype($variable) !== 'object') {
+			$output = \sprintf(
+				/* translators: %1$s is replaced with the name of the variable, and %2$s with its type. */
+				\esc_html__('%1$s variable is not a string or array but rather %2$s', 'eightshift-libs'),
+				$variable,
+				\gettype($variable)
+			);
+		} else {
+			$output = \esc_html__('Object couldn\'t be converted to string. Please provide only string or array.', 'eightshift-libs');
+		}
+
+		return new ComponentException($output);
+	}
+}

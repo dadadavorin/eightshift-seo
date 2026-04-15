@@ -1,0 +1,212 @@
+{
+	"$schema": "https://raw.githubusercontent.com/infinum/eightshift-frontend-libs-tailwind/main/schemas/globalManifest.json",
+	"namespace": "eightshift-seo",
+	"background": "#FFFFFF",
+	"foreground": "#1D4ED8",
+	"config": {
+		"useWrapper": false,
+		"useBlocks": false,
+		"useComponents": true,
+		"useVariations": false
+	},
+	"globalVariables": {
+		"breakpoints": {}
+	},
+
+	"caps": {
+		"manage": {
+			"id": "eightshift_seo_manage",
+			"help": "Manage Eightshift SEO settings"
+		}
+	},
+
+	"adminPagesPrefix": "es-seo-",
+	"optionsName": "es-seo-settings",
+
+	"meta": {
+		"title": "es_seo_title",
+		"description": "es_seo_description",
+		"noindex": "es_seo_noindex",
+		"nofollow": "es_seo_nofollow",
+		"canonical": "es_seo_canonical",
+		"ogTitle": "es_seo_og_title",
+		"ogDescription": "es_seo_og_description",
+		"ogImage": "es_seo_og_image",
+		"twitterTitle": "es_seo_twitter_title",
+		"twitterDescription": "es_seo_twitter_description",
+		"twitterImage": "es_seo_twitter_image",
+		"focusKeyphrase": "es_seo_focus_keyphrase",
+		"maxSnippet": "es_seo_max_snippet",
+		"maxImagePreview": "es_seo_max_image_preview",
+		"maxVideoPreview": "es_seo_max_video_preview"
+	},
+
+	"termMeta": {
+		"title": "es_seo_term_title",
+		"description": "es_seo_term_description",
+		"noindex": "es_seo_term_noindex",
+		"nofollow": "es_seo_term_nofollow",
+		"canonical": "es_seo_term_canonical",
+		"ogTitle": "es_seo_term_og_title",
+		"ogDescription": "es_seo_term_og_description",
+		"ogImage": "es_seo_term_og_image",
+		"twitterTitle": "es_seo_term_twitter_title",
+		"twitterDescription": "es_seo_term_twitter_description",
+		"twitterImage": "es_seo_term_twitter_image"
+	},
+
+	"filters": {
+		"canonical": "es_seo_canonical",
+		"robots": "es_seo_robots",
+		"ogTags": "es_seo_og_tags",
+		"twitterTags": "es_seo_twitter_tags",
+		"breadcrumbSchema": "es_seo_breadcrumb_schema",
+		"sitemapPostTypes": "es_seo_sitemap_post_types",
+		"sitemapTaxonomies": "es_seo_sitemap_taxonomies",
+		"titleTemplate": "es_seo_title_template",
+		"descriptionTemplate": "es_seo_description_template",
+		"templateTokens": "es_seo_template_tokens",
+		"supportedPostTypes": "es_seo_supported_post_types"
+	},
+
+	"optionsDefaultValue": {
+		"titleTemplates": {
+			"post": "%title% %sep% %sitename%",
+			"page": "%title% %sep% %sitename%"
+		},
+		"descriptionTemplates": {
+			"post": "%excerpt%",
+			"page": "%excerpt%"
+		},
+		"separator": "–",
+		"defaultOgImage": 0,
+		"twitterHandle": "",
+		"sitemap": {
+			"excludedPostTypes": [],
+			"excludedTaxonomies": [],
+			"addToRobotsTxt": true
+		},
+		"breadcrumbs": {
+			"enableSchema": true,
+			"homeLabel": "Home"
+		},
+		"robotsDefaults": {
+			"taxonomies": {}
+		}
+	},
+
+	"groups": {
+		"manage": {
+			"general": {
+				"isActive": true,
+				"icon": "options",
+				"title": "General",
+				"items": {
+					"general": {
+						"isActive": true,
+						"features": [
+							{
+								"id": "separator",
+								"group": "general",
+								"component": "input",
+								"name": "Title separator",
+								"initial": "–"
+							},
+							{
+								"id": "defaultOgImage",
+								"group": "general",
+								"component": "media",
+								"name": "Default OG image",
+								"initial": 0
+							},
+							{
+								"id": "twitterHandle",
+								"group": "general",
+								"component": "input",
+								"name": "Twitter / X handle",
+								"initial": ""
+							}
+						]
+					}
+				}
+			},
+			"defaults": {
+				"isActive": true,
+				"icon": "text",
+				"title": "Defaults",
+				"items": {
+					"general": {
+						"isActive": true,
+						"features": [
+							{
+								"id": "titleTemplates",
+								"group": "general",
+								"component": "custom",
+								"name": "Title templates",
+								"initial": {
+									"post": "%title% %sep% %sitename%",
+									"page": "%title% %sep% %sitename%"
+								}
+							},
+							{
+								"id": "descriptionTemplates",
+								"group": "general",
+								"component": "custom",
+								"name": "Description templates",
+								"initial": {
+									"post": "%excerpt%",
+									"page": "%excerpt%"
+								}
+							}
+						]
+					}
+				}
+			},
+			"sitemap": {
+				"isActive": true,
+				"icon": "sitemap",
+				"title": "Sitemap",
+				"items": {
+					"general": {
+						"isActive": true,
+						"features": [
+							{
+								"id": "sitemap",
+								"group": "general",
+								"component": "custom",
+								"name": "Sitemap settings",
+								"initial": {
+									"excludedPostTypes": [],
+									"excludedTaxonomies": [],
+									"addToRobotsTxt": true
+								}
+							}
+						]
+					}
+				}
+			},
+			"social": {
+				"isActive": true,
+				"icon": "share",
+				"title": "Social",
+				"items": {
+					"general": {
+						"isActive": true,
+						"features": [
+							{
+								"id": "breadcrumbs",
+								"group": "general",
+								"component": "custom",
+								"name": "Breadcrumb schema",
+								"initial": {
+									"enableSchema": true,
+									"homeLabel": "Home"
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+	}
+}
