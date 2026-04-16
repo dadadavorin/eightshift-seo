@@ -34,6 +34,15 @@ class Options implements ServiceInterface
 	public function register(): void
 	{
 		\add_action('init', [$this, 'registerOptions'], 20);
+
+		// Prevent the plugin's post-meta keys from appearing in the Classic Editor
+		// "Custom Fields" metabox. Gutenberg submits a hidden compatibility form for
+		// classic metaboxes; if our keys are in that form they carry stale values that
+		// overwrite what the REST API just saved. Marking them protected suppresses
+		// them from that form without affecting REST API reads/writes.
+		\add_filter('is_protected_meta', static function (bool $protected, string $metaKey): bool {
+			return $protected || \str_starts_with($metaKey, 'es_seo_');
+		}, 10, 2);
 	}
 
 	/**
