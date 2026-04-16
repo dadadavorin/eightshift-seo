@@ -26,6 +26,12 @@ export const SearchAppearancePanel = ({ getMeta, setMetaKey }) => {
 	const previewTitle = seoTitle
 		|| `${postTitle} ${separator ?? '–'} ${siteName ?? ''}`;
 
+	const charCounter = (length, max) => (
+		<span className={`es-seo-char-counter${length > max ? ' es-seo-char-counter--over' : ''}`}>
+			{length}/{max}
+		</span>
+	);
+
 	return (
 		<div className="es-seo-search-panel">
 			<SerpPreview
@@ -36,7 +42,7 @@ export const SearchAppearancePanel = ({ getMeta, setMetaKey }) => {
 
 			<TextControl
 				label={__('SEO title', 'eightshift-seo')}
-				help={`${seoTitle.length}/160`}
+				help={charCounter(seoTitle.length, 60)}
 				value={seoTitle}
 				onChange={(val) => setMetaKey('title', val)}
 				placeholder={previewTitle}
@@ -46,7 +52,7 @@ export const SearchAppearancePanel = ({ getMeta, setMetaKey }) => {
 
 			<TextareaControl
 				label={__('Meta description', 'eightshift-seo')}
-				help={`${seoDescription.length}/160`}
+				help={charCounter(seoDescription.length, 160)}
 				value={seoDescription}
 				onChange={(val) => setMetaKey('description', val)}
 				maxLength={320}

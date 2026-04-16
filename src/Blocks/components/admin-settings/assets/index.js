@@ -8,6 +8,7 @@
 
 import { createRoot } from '@wordpress/element';
 import { AdminApp } from './AdminApp';
+import './admin.css';
 
 const rootEl = document.getElementById('es-seo-admin-root');
 

@@ -72,15 +72,20 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 	/**
 	 * Enqueue styles for the settings page.
 	 *
-	 * No-op: the admin bundle has no separate CSS file (styles are inlined
-	 * by webpack or handled by WP core). Override prevents the parent from
-	 * throwing when applicationAdmin.css does not exist in the assets cache.
-	 *
 	 * @return void
 	 */
 	public function enqueueAdminStyles(): void
 	{
-		// Intentionally empty — no CSS bundle for the admin settings page.
+		if (!$this->isSettingsPage()) {
+			return;
+		}
+
+		$handle     = "{$this->getAssetsPrefix()}-admin-styles";
+		$pluginFile = \dirname(__DIR__, 3) . '/eightshift-seo.php';
+		$cssPath    = \plugins_url('public/applicationAdmin.css', $pluginFile);
+
+		\wp_register_style($handle, $cssPath, ['wp-components'], $this->getAssetsVersion());
+		\wp_enqueue_style($handle);
 	}
 
 	/**
@@ -100,6 +105,9 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 			return;
 		}
 
+		// Load the full WP media library so wp.media() is available for image pickers.
+		\wp_enqueue_media();
+
 		$handle = $this->getAdminScriptHandle();
 		$pluginFile = \dirname(__DIR__, 3) . '/eightshift-seo.php';
 
@@ -116,7 +124,7 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 		$localization = \wp_json_encode($this->buildLocalization());
 		\wp_add_inline_script(
 			$handle,
-			"const esSeoLocalization = {$localization}",
+			"var esSeoLocalization = {$localization}",
 			'before'
 		);
 	}
@@ -150,7 +158,7 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 		$pluginFile = \dirname(__DIR__, 3) . '/eightshift-seo.php';
 
 		$editorJsPath  = \plugins_url('public/applicationEditor.js', $pluginFile);
-		$editorCssPath = '';
+		$editorCssPath = \plugins_url('public/applicationEditor.css', $pluginFile);
 
 		if ($editorJsPath) {
 			\wp_register_script(
@@ -164,7 +172,7 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 
 			// Pass localization to the editor bundle.
 			$localization = \wp_json_encode($this->buildEditorLocalization());
-			\wp_add_inline_script($handle, "const esSeoEditorLocalization = {$localization}", 'before');
+			\wp_add_inline_script($handle, "var esSeoEditorLocalization = {$localization}", 'before');
 		}
 
 		if ($editorCssPath) {
@@ -195,7 +203,7 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 	 */
 	protected function getAdminScriptDependencies(): array
 	{
-		return ['wp-element', 'wp-i18n', 'wp-api-fetch', 'wp-core-data', 'wp-data'];
+		return ['wp-element', 'wp-components', 'wp-i18n', 'wp-api-fetch', 'wp-core-data', 'wp-data'];
 	}
 
 	/**
@@ -212,6 +220,7 @@ class EnqueueAdmin extends AbstractEnqueueAdmin
 			'wp-data',
 			'wp-core-data',
 			'wp-components',
+			'wp-block-editor',
 			'wp-i18n',
 			'wp-api-fetch',
 		];

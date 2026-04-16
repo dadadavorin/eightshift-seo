@@ -32,10 +32,34 @@ class SitemapHooks implements ServiceInterface
 	 */
 	public function register(): void
 	{
+		\add_filter('wp_sitemaps_add_provider', [$this, 'disableUsersSitemap'], 10, 2);
 		\add_filter('wp_sitemaps_post_types', [$this, 'filterSitemapPostTypes']);
 		\add_filter('wp_sitemaps_taxonomies', [$this, 'filterSitemapTaxonomies']);
 		\add_filter('wp_sitemaps_posts_query_args', [$this, 'excludeNoindexedPosts'], 10, 2);
 		\add_filter('robots_txt', [$this, 'appendSitemapToRobotsTxt'], 10, 2);
+	}
+
+	/**
+	 * Disable the users sitemap provider.
+	 *
+	 * Author archive URLs expose admin usernames (brute-force risk) and typically
+	 * contain thin or duplicate content. Excluded by default; can be re-enabled
+	 * via the eightshift_seo_enable_users_sitemap filter.
+	 *
+	 * @param \WP_Sitemaps_Provider|false $provider The provider instance or false to skip.
+	 * @param string                      $name     Provider name (e.g. 'posts', 'users').
+	 *
+	 * @return \WP_Sitemaps_Provider|false
+	 */
+	public function disableUsersSitemap($provider, string $name)
+	{
+		if ('users' !== $name) {
+			return $provider;
+		}
+
+		$enable = (bool) \apply_filters(Options::getFilter('enableUsersSitemap'), false);
+
+		return $enable ? $provider : false;
 	}
 
 	/**

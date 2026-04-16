@@ -1,0 +1,166 @@
+/* ==========================================================================
+   Eightshift SEO — Admin settings page styles
+   ========================================================================== */
+
+/* Page container */
+.es-seo-admin {
+	max-width: 860px;
+}
+
+/* Page title */
+.es-seo-admin__title {
+	padding: 9px 0 0;
+	color: #1d2327;
+}
+
+/* Subtitle / description below the h1 */
+.es-seo-admin__subtitle {
+	margin: 2px 0 14px;
+	color: #646970;
+	font-size: 13px;
+}
+
+/* Connect the tab bar to the panel below */
+.es-seo-admin .nav-tab-wrapper {
+	padding-bottom: 0;
+	margin-bottom: 0;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+/* White card panel below the tabs */
+.es-seo-admin__panel {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-top: none;
+	padding: 28px 32px 32px;
+}
+
+/* Save row */
+.es-seo-admin__footer {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 32px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-top: none;
+}
+
+/* ==========================================================================
+   Tab content
+   ========================================================================== */
+
+/* Column layout with breathing room between fields */
+.es-seo-tab {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+/* The h2 duplicates the tab label — hide it */
+.es-seo-tab > h2 {
+	display: none;
+}
+
+/* Section headings inside a tab */
+.es-seo-tab > h3 {
+	margin: 4px 0 -4px;
+	padding-bottom: 10px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+/* Descriptive help text below a section heading */
+.es-seo-tab > p.description {
+	margin: -12px 0 0;
+	font-size: 13px;
+	color: #646970;
+	font-style: italic;
+}
+
+/* ==========================================================================
+   Defaults tab — per-post-type card groups
+   ========================================================================== */
+
+.es-seo-post-type-group {
+	padding: 18px 20px 14px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+}
+
+.es-seo-post-type-group > h3 {
+	margin: 0 0 14px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	color: #50575e;
+	border: none;
+	padding: 0;
+}
+
+/* Tighten field gap inside a group */
+.es-seo-post-type-group .components-base-control {
+	margin-bottom: 12px;
+}
+
+.es-seo-post-type-group .components-base-control:last-child {
+	margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Advanced tab — per-taxonomy checkbox groups
+   ========================================================================== */
+
+/* Add breathing room between consecutive checkbox controls */
+.es-seo-tab .components-checkbox-control + .components-checkbox-control {
+	margin-top: 10px;
+}
+
+/* ==========================================================================
+   Image picker
+   ========================================================================== */
+
+.es-seo-image-preview {
+	margin-bottom: 10px;
+}
+
+.es-seo-image-preview img {
+	display: block;
+	max-width: 240px;
+	max-height: 135px;
+	object-fit: cover;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+}
+
+.es-seo-media-field {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* ==========================================================================
+   Sitemap tab — inline token reference
+   ========================================================================== */
+
+.es-seo-token-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: -10px 0 0;
+}
+
+.es-seo-token {
+	display: inline-block;
+	padding: 2px 7px;
+	background: #f0f0f1;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	font-family: monospace;
+	font-size: 12px;
+	color: #3c434a;
+}

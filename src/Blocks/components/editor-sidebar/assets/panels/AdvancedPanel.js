@@ -42,7 +42,7 @@ export const AdvancedPanel = ({ getMeta, setMetaKey }) => {
 
 			<hr />
 
-			<p style={{ fontWeight: 600, margin: '0 0 8px' }}>
+			<p className="es-seo-section-heading">
 				{__('Advanced robots directives', 'eightshift-seo')}
 			</p>
 

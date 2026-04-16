@@ -33,8 +33,23 @@ class TitleTag implements ServiceInterface
 	 */
 	public function register(): void
 	{
+		\add_action('after_setup_theme', [$this, 'addTitleTagSupport'], 1);
 		\add_filter('pre_get_document_title', [$this, 'filterDocumentTitle'], 10);
 		\add_filter('document_title_parts', [$this, 'filterDocumentTitleParts'], 10);
+	}
+
+	/**
+	 * Ensure the theme declares title-tag support so WordPress outputs <title>.
+	 *
+	 * Runs on after_setup_theme with priority 1 so it fires before (or after)
+	 * the theme's own setup, guaranteeing wp_head() will render the <title> tag
+	 * regardless of whether the active theme declares this support itself.
+	 *
+	 * @return void
+	 */
+	public function addTitleTagSupport(): void
+	{
+		\add_theme_support('title-tag');
 	}
 
 	/**

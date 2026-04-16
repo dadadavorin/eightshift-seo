@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
+import { Button, Notice, Spinner } from '@wordpress/components';
 import { GeneralTab } from './tabs/GeneralTab';
 import { DefaultsTab } from './tabs/DefaultsTab';
 import { SitemapTab } from './tabs/SitemapTab';
@@ -63,7 +64,12 @@ export const AdminApp = () => {
 	}, [settings]);
 
 	if (settings === null) {
-		return <p>{__('Loading…', 'eightshift-seo')}</p>;
+		return (
+			<div className="es-seo-admin">
+				<h1 className="es-seo-admin__title">{__('Eightshift SEO', 'eightshift-seo')}</h1>
+				<Spinner />
+			</div>
+		);
 	}
 
 	const activeTabDef = TABS.find((t) => t.id === activeTab);
@@ -71,11 +77,18 @@ export const AdminApp = () => {
 	return (
 		<div className="es-seo-admin">
 			<h1 className="es-seo-admin__title">{__('Eightshift SEO', 'eightshift-seo')}</h1>
+			<p className="es-seo-admin__subtitle">
+				{__('Manage titles, meta descriptions, Open Graph, sitemaps and more.', 'eightshift-seo')}
+			</p>
 
 			{notice && (
-				<div className={`notice notice-${notice.type} is-dismissible`}>
-					<p>{notice.message}</p>
-				</div>
+				<Notice
+					status={notice.type}
+					isDismissible
+					onRemove={() => setNotice(null)}
+				>
+					{notice.message}
+				</Notice>
 			)}
 
 			<nav className="nav-tab-wrapper">
@@ -98,14 +111,14 @@ export const AdminApp = () => {
 			</div>
 
 			<div className="es-seo-admin__footer">
-				<button
-					className="button button-primary"
+				<Button
+					variant="primary"
 					onClick={save}
+					isBusy={isSaving}
 					disabled={isSaving}
-					type="button"
 				>
 					{isSaving ? __('Saving…', 'eightshift-seo') : __('Save settings', 'eightshift-seo')}
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

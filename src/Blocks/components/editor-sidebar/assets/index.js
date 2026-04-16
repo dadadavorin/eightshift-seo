@@ -7,6 +7,7 @@
 
 import { registerPlugin } from '@wordpress/plugins';
 import { SeoPanelPlugin } from './SeoPanelPlugin';
+import './editor.css';
 
 registerPlugin('eightshift-seo', {
 	render: SeoPanelPlugin,
