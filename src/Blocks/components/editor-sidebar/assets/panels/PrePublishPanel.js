@@ -8,6 +8,7 @@ import { PluginPrePublishPanel } from '@wordpress/editor';
 import { TextControl, Notice } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
+import apiFetch from '@wordpress/api-fetch';
 
 const { metaKeys } = window.esSeoEditorLocalization ?? {};
 
@@ -48,6 +49,21 @@ export const PrePublishPanel = () => {
 	const seoTitle     = getMeta('title');
 	const seoDesc      = getMeta('description');
 
+	// Featured image alt check.
+	const featuredImageId = useSelect(
+		(select) => select('core/editor')?.getEditedPostAttribute('featured_media') ?? 0,
+		[]
+	);
+	const featuredImageAlt = useSelect(
+		(select) => {
+			if (!featuredImageId) return null;
+			const media = select('core').getMedia(featuredImageId);
+			return media ? (media.alt_text ?? '') : null;
+		},
+		[featuredImageId]
+	);
+	const featuredImageMissingAlt = featuredImageId > 0 && featuredImageAlt === '';
+
 	// Build comparison strings.
 	const displayTitle  = (seoTitle || postTitle).toLowerCase();
 	const descLower     = seoDesc.toLowerCase();
@@ -83,7 +99,7 @@ export const PrePublishPanel = () => {
 		]
 		: [];
 
-	const hasIssues = !seoTitle || !seoDesc || keyphraseChecks.some((c) => !c.pass);
+	const hasIssues = !seoTitle || !seoDesc || featuredImageMissingAlt || keyphraseChecks.some((c) => !c.pass);
 
 	return (
 		<PluginPrePublishPanel
@@ -108,6 +124,12 @@ export const PrePublishPanel = () => {
 			{!seoDesc && (
 				<Notice status="warning" isDismissible={false}>
 					{__('No meta description set — search engines may auto-generate one.', 'eightshift-seo')}
+				</Notice>
+			)}
+
+			{featuredImageMissingAlt && (
+				<Notice status="warning" isDismissible={false}>
+					{__('Featured image has no alt text set.', 'eightshift-seo')}
 				</Notice>
 			)}
 

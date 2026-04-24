@@ -164,3 +164,15 @@
 	font-size: 12px;
 	color: #3c434a;
 }
+
+.es-seo-token--clickable {
+	cursor: pointer;
+	transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.es-seo-token--clickable:hover,
+.es-seo-token--clickable:focus {
+	background: #e5effa;
+	border-color: #1d4ed8;
+	color: #1d4ed8;
+}

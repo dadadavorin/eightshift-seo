@@ -51,6 +51,16 @@ class OpenGraph implements ServiceInterface
 		);
 
 		foreach ($tags as $property => $content) {
+			// Array values emit one <meta> per element with the same property name.
+			if (\is_array($content)) {
+				foreach ($content as $item) {
+					if (!empty($item)) {
+						echo '<meta property="' . \esc_attr($property) . '" content="' . \esc_attr((string) $item) . '">' . "\n";
+					}
+				}
+				continue;
+			}
+
 			if (empty($content) && $content !== '0') {
 				continue;
 			}
@@ -61,7 +71,9 @@ class OpenGraph implements ServiceInterface
 	/**
 	 * Build the full og:* tag array for the current page.
 	 *
-	 * @return array<string, string>
+	 * Values are strings; article:tag uses string[] for multi-emit support.
+	 *
+	 * @return array<string, string|string[]>
 	 */
 	private function buildTags(): array
 	{
@@ -116,7 +128,40 @@ class OpenGraph implements ServiceInterface
 					$tags['og:image']        = $imageData[0];
 					$tags['og:image:width']  = (string) $imageData[1];
 					$tags['og:image:height'] = (string) $imageData[2];
+
+					// og:image:alt from attachment alt text.
+					$imageAlt = \get_post_meta($ogImageId, '_wp_attachment_image_alt', true);
+					if (!empty($imageAlt)) {
+						$tags['og:image:alt'] = (string) $imageAlt;
+					}
 				}
+			}
+
+			// article:* tags — only for article type.
+			$author = \get_userdata((int) $post->post_author);
+			if ($author) {
+				$tags['article:author'] = $author->display_name;
+			}
+
+			$tags['article:published_time'] = \get_post_time('c', true, $post);
+			$tags['article:modified_time']  = \get_post_modified_time('c', true, $post);
+
+			// article:section — primary category (es_seo_primary_category) or first assigned.
+			$primaryCatId = (int) \get_post_meta($post->ID, 'es_seo_primary_category', true);
+			if ($primaryCatId > 0) {
+				$primaryCat = \get_term($primaryCatId, 'category');
+			} else {
+				$cats = \get_the_category($post->ID);
+				$primaryCat = !empty($cats) ? $cats[0] : null;
+			}
+			if ($primaryCat instanceof \WP_Term) {
+				$tags['article:section'] = $primaryCat->name;
+			}
+
+			// article:tag — one <meta> per assigned tag; stored as array for multi-emit.
+			$postTags = \get_the_tags($post->ID);
+			if (\is_array($postTags) && !empty($postTags)) {
+				$tags['article:tag'] = \array_map(static fn (\WP_Term $t) => $t->name, $postTags);
 			}
 		} else {
 			// Home / archive pages.
@@ -132,6 +177,11 @@ class OpenGraph implements ServiceInterface
 					$tags['og:image']        = $imageData[0];
 					$tags['og:image:width']  = (string) $imageData[1];
 					$tags['og:image:height'] = (string) $imageData[2];
+
+					$imageAlt = \get_post_meta($defaultImageId, '_wp_attachment_image_alt', true);
+					if (!empty($imageAlt)) {
+						$tags['og:image:alt'] = (string) $imageAlt;
+					}
 				}
 			}
 		}

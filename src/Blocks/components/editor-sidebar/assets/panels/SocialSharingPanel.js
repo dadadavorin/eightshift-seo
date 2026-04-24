@@ -3,16 +3,17 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { TextControl, TextareaControl } from '@wordpress/components';
+import { TextControl, TextareaControl, SelectControl } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
 export const SocialSharingPanel = ({ getMeta, setMetaKey }) => {
-	const ogTitle       = getMeta('ogTitle');
-	const ogDescription = getMeta('ogDescription');
-	const ogImage       = getMeta('ogImage');
-	const twTitle       = getMeta('twitterTitle');
-	const twDescription = getMeta('twitterDescription');
-	const twImage       = getMeta('twitterImage');
+	const ogTitle         = getMeta('ogTitle');
+	const ogDescription   = getMeta('ogDescription');
+	const ogImage         = getMeta('ogImage');
+	const twTitle         = getMeta('twitterTitle');
+	const twDescription   = getMeta('twitterDescription');
+	const twImage         = getMeta('twitterImage');
+	const twitterCardType = getMeta('twitterCardType') || '';
 
 	return (
 		<div className="es-seo-social-panel">
@@ -68,6 +69,20 @@ export const SocialSharingPanel = ({ getMeta, setMetaKey }) => {
 			<hr />
 
 			<h3>{__('Twitter / X Card', 'eightshift-seo')}</h3>
+
+			<SelectControl
+				label={__('Card type', 'eightshift-seo')}
+				help={__('Override the site-wide default for this post.', 'eightshift-seo')}
+				value={twitterCardType}
+				options={[
+					{ label: __('Site default', 'eightshift-seo'),           value: '' },
+					{ label: __('Summary (small image)', 'eightshift-seo'),   value: 'summary' },
+					{ label: __('Summary large image', 'eightshift-seo'),     value: 'summary_large_image' },
+				]}
+				onChange={(val) => setMetaKey('twitterCardType', val)}
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
 
 			<TextControl
 				label={__('Twitter title', 'eightshift-seo')}

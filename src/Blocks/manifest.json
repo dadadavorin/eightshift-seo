@@ -35,10 +35,18 @@
 		"twitterTitle": "es_seo_twitter_title",
 		"twitterDescription": "es_seo_twitter_description",
 		"twitterImage": "es_seo_twitter_image",
+		"twitterCardType": "es_seo_twitter_card_type",
 		"focusKeyphrase": "es_seo_focus_keyphrase",
+		"primaryCategory": "es_seo_primary_category",
 		"maxSnippet": "es_seo_max_snippet",
 		"maxImagePreview": "es_seo_max_image_preview",
-		"maxVideoPreview": "es_seo_max_video_preview"
+		"maxVideoPreview": "es_seo_max_video_preview",
+		"noarchive": "es_seo_noarchive",
+		"nosnippet": "es_seo_nosnippet",
+		"noimageindex": "es_seo_noimageindex",
+		"notranslate": "es_seo_notranslate",
+		"unavailableAfter": "es_seo_unavailable_after",
+		"hreflangDisabled": "es_seo_hreflang_disabled"
 	},
 
 	"termMeta": {
@@ -52,7 +60,11 @@
 		"ogImage": "es_seo_term_og_image",
 		"twitterTitle": "es_seo_term_twitter_title",
 		"twitterDescription": "es_seo_term_twitter_description",
-		"twitterImage": "es_seo_term_twitter_image"
+		"twitterImage": "es_seo_term_twitter_image",
+		"noarchive": "es_seo_term_noarchive",
+		"nosnippet": "es_seo_term_nosnippet",
+		"noimageindex": "es_seo_term_noimageindex",
+		"notranslate": "es_seo_term_notranslate"
 	},
 
 	"filters": {
@@ -66,7 +78,15 @@
 		"titleTemplate": "es_seo_title_template",
 		"descriptionTemplate": "es_seo_description_template",
 		"templateTokens": "es_seo_template_tokens",
-		"supportedPostTypes": "es_seo_supported_post_types"
+		"templateTokensDateFormat": "es_seo_template_tokens_date_format",
+		"supportedPostTypes": "es_seo_supported_post_types",
+		"siteRepresentationSchema": "es_seo_site_representation_schema",
+		"webmasterVerificationTags": "es_seo_webmaster_verification_tags",
+		"hreflangAlternates": "es_seo_hreflang_alternates",
+		"indexNowSubmit": "es_seo_indexnow_submit",
+		"enableUsersSitemap": "es_seo_enable_users_sitemap",
+		"imageSitemapEntry": "es_seo_image_sitemap_entry",
+		"healthChecks": "es_seo_health_checks"
 	},
 
 	"optionsDefaultValue": {
@@ -81,6 +101,10 @@
 		"separator": "–",
 		"defaultOgImage": 0,
 		"twitterHandle": "",
+		"twitterCardDefault": "summary_large_image",
+		"pagination": {
+			"emitPrevNext": false
+		},
 		"sitemap": {
 			"excludedPostTypes": [],
 			"excludedTaxonomies": [],
@@ -91,7 +115,47 @@
 			"homeLabel": "Home"
 		},
 		"robotsDefaults": {
-			"taxonomies": {}
+			"taxonomies": {},
+			"archives": {
+				"search": true,
+				"date": true,
+				"paged": true,
+				"404": true,
+				"attachment": true,
+				"author": "auto"
+			}
+		},
+		"webmaster": {
+			"google": "",
+			"bing": "",
+			"yandex": "",
+			"pinterest": "",
+			"baidu": ""
+		},
+		"siteRepresentation": {
+			"type": "organization",
+			"name": "",
+			"logo": 0,
+			"personId": 0,
+			"social": {
+				"facebook": "",
+				"instagram": "",
+				"linkedin": "",
+				"youtube": "",
+				"twitter": "",
+				"github": "",
+				"wikipedia": "",
+				"other": []
+			}
+		},
+		"attachmentRedirect": "file",
+		"indexNow": {
+			"enabled": false,
+			"key": ""
+		},
+		"images": {
+			"autoFillAlt": true,
+			"includeSitemap": true
 		}
 	},
 

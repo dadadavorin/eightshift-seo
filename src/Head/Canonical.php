@@ -50,12 +50,20 @@ class Canonical implements ServiceInterface
 	}
 
 	/**
-	 * Output the <link rel="canonical"> tag.
+	 * Output the <link rel="canonical"> tag, and optionally rel=prev/next.
+	 *
+	 * Feeds already carry a <link rel="self"> in their body; a canonical here
+	 * would conflict, so we skip emission entirely on feed pages.
 	 *
 	 * @return void
 	 */
 	public function outputCanonical(): void
 	{
+		// Feeds manage their own self-reference; no canonical needed.
+		if (\is_feed()) {
+			return;
+		}
+
 		$url = $this->resolveCanonical();
 
 		if (empty($url)) {
@@ -63,6 +71,34 @@ class Canonical implements ServiceInterface
 		}
 
 		echo '<link rel="canonical" href="' . \esc_url($url) . '">' . "\n";
+
+		// Optional rel=prev/next (default off; Google deprecated but Bing still uses).
+		if (Options::getOption(['pagination', 'emitPrevNext'])) {
+			$this->outputPrevNext();
+		}
+	}
+
+	/**
+	 * Emit rel=prev and rel=next for paginated archives.
+	 *
+	 * @return void
+	 */
+	private function outputPrevNext(): void
+	{
+		$paged = (int) \get_query_var('paged', 1);
+		if ($paged < 1) {
+			$paged = 1;
+		}
+
+		if ($paged > 1) {
+			echo '<link rel="prev" href="' . \esc_url(\get_pagenum_link($paged - 1)) . '">' . "\n";
+		}
+
+		global $wp_query;
+		$maxPages = (int) ($wp_query->max_num_pages ?? 1);
+		if ($paged < $maxPages) {
+			echo '<link rel="next" href="' . \esc_url(\get_pagenum_link($paged + 1)) . '">' . "\n";
+		}
 	}
 
 	/**

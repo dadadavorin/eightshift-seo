@@ -68,8 +68,9 @@ class TwitterCards implements ServiceInterface
 		$post = \get_post();
 		$tags = [];
 
-		// twitter:card is always 'summary_large_image' when we have an image.
-		$tags['twitter:card'] = 'summary';
+		// Resolve base card type: per-post override → site default → 'summary'.
+		$siteDefault = (string) (Options::getOption(['twitterCardDefault']) ?: 'summary_large_image');
+		$tags['twitter:card'] = $siteDefault ?: 'summary';
 
 		// twitter:site: @handle from settings.
 		$handle = Options::getOption(['twitterHandle']);
@@ -78,6 +79,12 @@ class TwitterCards implements ServiceInterface
 		}
 
 		if ($post instanceof WP_Post) {
+			// Per-post card type override ('' means inherit site default).
+			$perPostCard = (string) \get_post_meta($post->ID, Options::getMetaKey('twitterCardType'), true);
+			if (!empty($perPostCard)) {
+				$tags['twitter:card'] = $perPostCard;
+			}
+
 			// twitter:title: Twitter-specific → OG-specific → SEO title → post title
 			$twTitle = \get_post_meta($post->ID, Options::getMetaKey('twitterTitle'), true);
 			if (empty($twTitle)) {
@@ -119,7 +126,16 @@ class TwitterCards implements ServiceInterface
 				$imageData = \wp_get_attachment_image_src($twImageId, 'full');
 				if ($imageData) {
 					$tags['twitter:image'] = $imageData[0];
-					$tags['twitter:card']  = 'summary_large_image';
+
+					// Use summary_large_image when we have an image and no explicit card type override.
+					if (empty($perPostCard)) {
+						$tags['twitter:card'] = 'summary_large_image';
+					}
+
+					$imageAlt = \get_post_meta($twImageId, '_wp_attachment_image_alt', true);
+					if (!empty($imageAlt)) {
+						$tags['twitter:image:alt'] = (string) $imageAlt;
+					}
 				}
 			}
 		} else {
@@ -132,6 +148,11 @@ class TwitterCards implements ServiceInterface
 				if ($imageData) {
 					$tags['twitter:image'] = $imageData[0];
 					$tags['twitter:card']  = 'summary_large_image';
+
+					$imageAlt = \get_post_meta($defaultImageId, '_wp_attachment_image_alt', true);
+					if (!empty($imageAlt)) {
+						$tags['twitter:image:alt'] = (string) $imageAlt;
+					}
 				}
 			}
 		}

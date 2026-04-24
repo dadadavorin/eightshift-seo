@@ -6,7 +6,7 @@
  * Description: Lightweight SEO plugin for Eightshift projects. Handles meta title/description, robots directives, canonical URLs, OpenGraph/Twitter Cards, XML sitemap control, and BreadcrumbList JSON-LD.
  * Author: Team Eightshift
  * Author URI: https://eightshift.com/
- * Version: 1.0.1
+ * Version: 1.3.0
  * License: MIT
  * License URI: http://www.gnu.org/licenses/gpl.html
  * Text Domain: eightshift-seo

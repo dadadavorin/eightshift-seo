@@ -17,7 +17,32 @@ export const DefaultsTab = ({ settings, onChange }) => {
 	const setDesc = (slug, val) =>
 		onChange({ ...settings, descriptionTemplates: { ...descTemplates, [slug]: val } });
 
-	const tokens = ['%title%', '%sitename%', '%sep%', '%excerpt%', '%author%', '%date%'];
+	const tokens = [
+		{ token: '%title%',            help: __('Post or archive title', 'eightshift-seo') },
+		{ token: '%sitename%',         help: __('Blog name (Settings → General)', 'eightshift-seo') },
+		{ token: '%tagline%',          help: __('Blog tagline / description', 'eightshift-seo') },
+		{ token: '%sep%',              help: __('Configured title separator', 'eightshift-seo') },
+		{ token: '%excerpt%',          help: __('Post excerpt (auto-generated if empty)', 'eightshift-seo') },
+		{ token: '%author%',           help: __('Post author display name', 'eightshift-seo') },
+		{ token: '%date%',             help: __('Post publish date', 'eightshift-seo') },
+		{ token: '%modified_date%',    help: __('Post modified date', 'eightshift-seo') },
+		{ token: '%id%',               help: __('Post or term ID', 'eightshift-seo') },
+		{ token: '%parent_title%',     help: __('Parent post title (hierarchical types)', 'eightshift-seo') },
+		{ token: '%primary_category%', help: __('Primary category (falls back to first)', 'eightshift-seo') },
+		{ token: '%category%',         help: __('Comma-separated category names', 'eightshift-seo') },
+		{ token: '%tag%',              help: __('Comma-separated tag names', 'eightshift-seo') },
+		{ token: '%archive_title%',    help: __('Post type or term archive label', 'eightshift-seo') },
+		{ token: '%page%',             help: __('Current page number on paginated content', 'eightshift-seo') },
+		{ token: '%pagetotal%',        help: __('Total pages on paginated content', 'eightshift-seo') },
+		{ token: '%search_phrase%',    help: __('Search phrase on search result pages', 'eightshift-seo') },
+		{ token: '%current_year%',     help: __('Current year', 'eightshift-seo') },
+	];
+
+	const copyToken = (token) => {
+		if (navigator?.clipboard?.writeText) {
+			navigator.clipboard.writeText(token);
+		}
+	};
 
 	return (
 		<div className="es-seo-tab">
@@ -25,11 +50,20 @@ export const DefaultsTab = ({ settings, onChange }) => {
 
 			<div>
 				<p className="description" style={{ margin: '0 0 8px' }}>
-					{__('Available tokens:', 'eightshift-seo')}
+					{__('Available tokens (click to copy):', 'eightshift-seo')}
 				</p>
 				<div className="es-seo-token-list">
-					{tokens.map((token) => (
-						<code key={token} className="es-seo-token">{token}</code>
+					{tokens.map(({ token, help }) => (
+						<button
+							key={token}
+							type="button"
+							title={help}
+							aria-label={`${token} — ${help}`}
+							className="es-seo-token es-seo-token--clickable"
+							onClick={() => copyToken(token)}
+						>
+							{token}
+						</button>
 					))}
 				</div>
 			</div>
