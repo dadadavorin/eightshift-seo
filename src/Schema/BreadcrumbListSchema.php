@@ -33,37 +33,43 @@ class BreadcrumbListSchema implements ServiceInterface
 	 */
 	public function register(): void
 	{
-		\add_action('wp_head', [$this, 'outputBreadcrumbSchema'], 10);
+		// Contribute to the unified @graph instead of emitting a standalone script.
+		\add_filter(Options::getFilter('schemaGraph'), [$this, 'addBreadcrumbNode'], 20, 2);
 	}
 
 	/**
-	 * Build and output the BreadcrumbList JSON-LD script tag.
+	 * Contribute a BreadcrumbList node to the schema graph.
 	 *
-	 * @return void
+	 * @param array<int, array<string, mixed>> $graph   Current graph nodes.
+	 * @param array<string, mixed>             $context Request context from GraphEmitter.
+	 *
+	 * @return array<int, array<string, mixed>>
 	 */
-	public function outputBreadcrumbSchema(): void
+	public function addBreadcrumbNode(array $graph, array $context): array
 	{
 		if (!Options::getOption(['breadcrumbs', 'enableSchema'])) {
-			return;
+			return $graph;
 		}
 
 		$items = $this->buildTrail();
 
 		if (empty($items)) {
-			return;
+			return $graph;
 		}
 
-		// Allow per-project trail reshaping.
-		$queriedObject = \get_queried_object();
-		$items = \apply_filters(Options::getFilter('breadcrumbSchema'), $items, $queriedObject);
+		$queriedObject = $context['queriedObject'] ?? \get_queried_object();
+		$items         = \apply_filters(Options::getFilter('breadcrumbSchema'), $items, $queriedObject);
 
-		$schema = [
-			'@context'        => 'https://schema.org',
+		// No @context here — GraphEmitter adds it at the outer envelope level.
+		$node = [
 			'@type'           => 'BreadcrumbList',
+			'@id'             => \home_url('/') . '#breadcrumb',
 			'itemListElement' => $items,
 		];
 
-		echo '<script type="application/ld+json">' . \wp_json_encode($schema, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
+		$graph[] = $node;
+
+		return $graph;
 	}
 
 	/**

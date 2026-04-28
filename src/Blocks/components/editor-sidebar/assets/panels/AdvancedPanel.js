@@ -21,6 +21,8 @@ export const AdvancedPanel = ({ getMeta, setMetaKey, postType }) => {
 	const nosnippet       = getMeta('nosnippet');
 	const noimageindex    = getMeta('noimageindex');
 	const notranslate     = getMeta('notranslate');
+	const noai            = getMeta('noai');
+	const noimageai       = getMeta('noimageai');
 	const unavailableAfter = getMeta('unavailableAfter') || '';
 	const primaryCategory  = getMeta('primaryCategory') || 0;
 
@@ -158,6 +160,20 @@ export const AdvancedPanel = ({ getMeta, setMetaKey, postType }) => {
 						help={__('Tells Google not to offer a translation of this page.', 'eightshift-seo')}
 						checked={!!notranslate}
 						onChange={(val) => setMetaKey('notranslate', val)}
+						__nextHasNoMarginBottom
+					/>
+					<CheckboxControl
+						label={__('noai — block AI training crawlers', 'eightshift-seo')}
+						help={__('Emits noai in the robots meta tag. Honoured by training-category AI bots (GPTBot, ClaudeBot, Google-Extended, etc.).', 'eightshift-seo')}
+						checked={!!noai}
+						onChange={(val) => setMetaKey('noai', val)}
+						__nextHasNoMarginBottom
+					/>
+					<CheckboxControl
+						label={__('noimageai — block AI image training', 'eightshift-seo')}
+						help={__('Emits noimageai in the robots meta tag to prevent images on this page from being used for AI training.', 'eightshift-seo')}
+						checked={!!noimageai}
+						onChange={(val) => setMetaKey('noimageai', val)}
 						__nextHasNoMarginBottom
 					/>
 

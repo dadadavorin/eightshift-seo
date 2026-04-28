@@ -46,7 +46,9 @@
 		"noimageindex": "es_seo_noimageindex",
 		"notranslate": "es_seo_notranslate",
 		"unavailableAfter": "es_seo_unavailable_after",
-		"hreflangDisabled": "es_seo_hreflang_disabled"
+		"hreflangDisabled": "es_seo_hreflang_disabled",
+		"noai": "es_seo_noai",
+		"noimageai": "es_seo_noimageai"
 	},
 
 	"termMeta": {
@@ -86,7 +88,16 @@
 		"indexNowSubmit": "es_seo_indexnow_submit",
 		"enableUsersSitemap": "es_seo_enable_users_sitemap",
 		"imageSitemapEntry": "es_seo_image_sitemap_entry",
-		"healthChecks": "es_seo_health_checks"
+		"healthChecks": "es_seo_health_checks",
+		"schemaGraph": "es_seo_schema_graph",
+		"schemaContext": "es_seo_schema_context",
+		"aiBotRegistry": "es_seo_ai_bot_registry",
+		"aiCrawlerRobotsTxt": "es_seo_ai_crawler_robots_txt",
+		"schemaNodeOrganization": "es_seo_schema_node_organization",
+		"schemaNodePerson": "es_seo_schema_node_person",
+		"articleSchemaNode": "es_seo_article_schema_node",
+		"webpageSchemaNode": "es_seo_webpage_schema_node",
+		"articleType": "es_seo_article_type"
 	},
 
 	"optionsDefaultValue": {
@@ -123,6 +134,10 @@
 				"404": true,
 				"attachment": true,
 				"author": "auto"
+			},
+			"ai": {
+				"noai": false,
+				"noimageai": false
 			}
 		},
 		"webmaster": {
@@ -156,6 +171,11 @@
 		"images": {
 			"autoFillAlt": true,
 			"includeSitemap": true
+		},
+		"aiCrawlers": {
+			"enabled": true,
+			"defaultPolicy": "allow",
+			"perBot": {}
 		}
 	},
 

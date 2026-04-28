@@ -31,29 +31,36 @@ class SiteRepresentationSchema implements ServiceInterface
 	 */
 	public function register(): void
 	{
-		\add_action('wp_head', [$this, 'outputRepresentationSchema'], 12);
+		// Contribute to the unified @graph instead of emitting a standalone script.
+		// Priority 10 so the Organization / Person node is present before Article
+		// (priority 30) tries to cross-reference it by @id.
+		\add_filter(Options::getFilter('schemaGraph'), [$this, 'addRepresentationNode'], 10, 2);
 	}
 
 	/**
-	 * Build and output the Organization / Person JSON-LD script tag.
+	 * Contribute an Organization or Person node to the schema graph.
 	 *
-	 * @return void
+	 * Emits on every page (not only the homepage) so that Article nodes on
+	 * singular posts can cross-reference the publisher by @id. The @id is
+	 * globally stable, so de-duplication in GraphEmitter keeps a single node.
+	 *
+	 * @param array<int, array<string, mixed>> $graph   Current graph nodes.
+	 * @param array<string, mixed>             $context Request context from GraphEmitter.
+	 *
+	 * @return array<int, array<string, mixed>>
 	 */
-	public function outputRepresentationSchema(): void
+	public function addRepresentationNode(array $graph, array $context): array
 	{
-		if (!\is_front_page() && !\is_home()) {
-			return;
+		$node = $this->buildSchema();
+		$node = \apply_filters(Options::getFilter('siteRepresentationSchema'), $node);
+
+		if (empty($node) || !\is_array($node)) {
+			return $graph;
 		}
 
-		$schema = $this->buildSchema();
+		$graph[] = $node;
 
-		$schema = \apply_filters(Options::getFilter('siteRepresentationSchema'), $schema);
-
-		if (empty($schema) || !\is_array($schema)) {
-			return;
-		}
-
-		echo '<script type="application/ld+json">' . \wp_json_encode($schema, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
+		return $graph;
 	}
 
 	/**
@@ -79,10 +86,10 @@ class SiteRepresentationSchema implements ServiceInterface
 			}
 
 			$schema = [
-				'@context' => 'https://schema.org',
-				'@type'    => 'Person',
-				'name'     => $user->display_name,
-				'url'      => $homeUrl,
+				'@type' => 'Person',
+				'@id'   => $homeUrl . '#person-' . $userId,
+				'name'  => $user->display_name,
+				'url'   => $homeUrl,
 			];
 
 			$avatarUrl = \get_avatar_url($userId, ['size' => 512]);
@@ -104,10 +111,10 @@ class SiteRepresentationSchema implements ServiceInterface
 		}
 
 		$schema = [
-			'@context' => 'https://schema.org',
-			'@type'    => 'Organization',
-			'name'     => $name,
-			'url'      => $homeUrl,
+			'@type' => 'Organization',
+			'@id'   => $homeUrl . '#organization',
+			'name'  => $name,
+			'url'   => $homeUrl,
 		];
 
 		$logoId = (int) Options::getOption(['siteRepresentation', 'logo']);

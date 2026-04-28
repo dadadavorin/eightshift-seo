@@ -17,18 +17,20 @@ import { AdvancedTab } from './tabs/AdvancedTab';
 import { SiteRepresentationTab } from './tabs/SiteRepresentationTab';
 import { ToolsTab } from './tabs/ToolsTab';
 import { HealthTab } from './tabs/HealthTab';
+import { AiCrawlersTab } from './tabs/AiCrawlersTab';
 
 const { optionName } = window.esSeoLocalization ?? {};
 
 const TABS = [
-	{ id: 'general',  label: __('General',  'eightshift-seo'), Component: GeneralTab },
-	{ id: 'site',     label: __('Site',     'eightshift-seo'), Component: SiteRepresentationTab },
-	{ id: 'defaults', label: __('Defaults', 'eightshift-seo'), Component: DefaultsTab },
-	{ id: 'sitemap',  label: __('Sitemap',  'eightshift-seo'), Component: SitemapTab },
-	{ id: 'social',   label: __('Social',   'eightshift-seo'), Component: SocialTab },
-	{ id: 'advanced', label: __('Advanced', 'eightshift-seo'), Component: AdvancedTab },
-	{ id: 'tools',    label: __('Tools',    'eightshift-seo'), Component: ToolsTab },
-	{ id: 'health',   label: __('Health',   'eightshift-seo'), Component: HealthTab },
+	{ id: 'general',     label: __('General',     'eightshift-seo'), Component: GeneralTab },
+	{ id: 'site',        label: __('Site',        'eightshift-seo'), Component: SiteRepresentationTab },
+	{ id: 'defaults',    label: __('Defaults',    'eightshift-seo'), Component: DefaultsTab },
+	{ id: 'sitemap',     label: __('Sitemap',     'eightshift-seo'), Component: SitemapTab },
+	{ id: 'social',      label: __('Social',      'eightshift-seo'), Component: SocialTab },
+	{ id: 'advanced',    label: __('Advanced',    'eightshift-seo'), Component: AdvancedTab },
+	{ id: 'ai-crawlers', label: __('AI Crawlers', 'eightshift-seo'), Component: AiCrawlersTab },
+	{ id: 'tools',       label: __('Tools',       'eightshift-seo'), Component: ToolsTab },
+	{ id: 'health',      label: __('Health',      'eightshift-seo'), Component: HealthTab },
 ];
 
 export const AdminApp = () => {

@@ -10,11 +10,15 @@ declare(strict_types=1);
 
 namespace EightshiftSeo\Health;
 
+use EightshiftSeo\Health\Checks\AiCrawlerPolicySetCheck;
+use EightshiftSeo\Health\Checks\ArticleSchemaCoverageCheck;
 use EightshiftSeo\Health\Checks\AttachmentPagesIndexableCheck;
+use EightshiftSeo\Health\Checks\AuthorsHaveBioCheck;
 use EightshiftSeo\Health\Checks\DefaultOgImageCheck;
 use EightshiftSeo\Health\Checks\ExpiredUnavailableAfterCheck;
 use EightshiftSeo\Health\Checks\HomepageTitleTemplateCheck;
 use EightshiftSeo\Health\Checks\MissingMetaDescriptionCheck;
+use EightshiftSeo\Health\Checks\SiteRepresentationCompleteCheck;
 use EightshiftSeo\Health\Checks\SitemapReachableCheck;
 use EightshiftSeo\Health\Checks\VerificationConfiguredCheck;
 use EightshiftSeo\Options\Options;
@@ -172,6 +176,11 @@ class HealthDashboard implements ServiceInterface
 			new MissingMetaDescriptionCheck(),
 			new AttachmentPagesIndexableCheck(),
 			new ExpiredUnavailableAfterCheck(),
+			// GEO checks (Phase 6).
+			new AiCrawlerPolicySetCheck(),
+			new AuthorsHaveBioCheck(),
+			new SiteRepresentationCompleteCheck(),
+			new ArticleSchemaCoverageCheck(),
 		];
 	}
 }
