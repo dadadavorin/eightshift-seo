@@ -364,6 +364,48 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 	}
 
 	/**
+	 * Regenerate the llms.txt transient.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp es-seo llms regenerate
+	 *
+	 * @subcommand llms regenerate
+	 * @param array<string>        $args      Positional arguments.
+	 * @param array<string,string> $assocArgs Named arguments.
+	 *
+	 * @return void
+	 */
+	public function llms_regenerate(array $args, array $assocArgs): void // phpcs:ignore
+	{
+		\delete_transient('es_seo_llms_txt');
+		// Force regeneration by instantiating the generator.
+		$gen     = new \EightshiftSeo\Llms\LlmsTxtGenerator();
+		$content = $gen->generate();
+		\set_transient('es_seo_llms_txt', $content, \DAY_IN_SECONDS);
+		\WP_CLI::success('llms.txt regenerated (' . \strlen($content) . ' bytes).');
+	}
+
+	/**
+	 * Preview llms.txt output.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp es-seo llms preview
+	 *
+	 * @subcommand llms preview
+	 * @param array<string>        $args      Positional arguments.
+	 * @param array<string,string> $assocArgs Named arguments.
+	 *
+	 * @return void
+	 */
+	public function llms_preview(array $args, array $assocArgs): void // phpcs:ignore
+	{
+		$gen = new \EightshiftSeo\Llms\LlmsTxtGenerator();
+		\WP_CLI::line($gen->generate());
+	}
+
+	/**
 	 * Recursively keep only the keys present in $defaults.
 	 *
 	 * @param array<mixed> $input    Input settings array.

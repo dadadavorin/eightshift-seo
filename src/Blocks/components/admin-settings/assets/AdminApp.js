@@ -18,6 +18,7 @@ import { SiteRepresentationTab } from './tabs/SiteRepresentationTab';
 import { ToolsTab } from './tabs/ToolsTab';
 import { HealthTab } from './tabs/HealthTab';
 import { AiCrawlersTab } from './tabs/AiCrawlersTab';
+import { LlmsTxtTab } from './tabs/LlmsTxtTab';
 
 const { optionName } = window.esSeoLocalization ?? {};
 
@@ -29,6 +30,7 @@ const TABS = [
 	{ id: 'social',      label: __('Social',      'eightshift-seo'), Component: SocialTab },
 	{ id: 'advanced',    label: __('Advanced',    'eightshift-seo'), Component: AdvancedTab },
 	{ id: 'ai-crawlers', label: __('AI Crawlers', 'eightshift-seo'), Component: AiCrawlersTab },
+	{ id: 'llms-txt',   label: __('llms.txt',    'eightshift-seo'), Component: LlmsTxtTab },
 	{ id: 'tools',       label: __('Tools',       'eightshift-seo'), Component: ToolsTab },
 	{ id: 'health',      label: __('Health',      'eightshift-seo'), Component: HealthTab },
 ];

@@ -145,6 +145,52 @@ class ArticleSchema implements ServiceInterface
 			$node['image'] = $imageNode;
 		}
 
+		// Citations (es_seo_citations).
+		// get_post_meta returns '' when not set; cast only when we have an actual array.
+		$rawCitations = \get_post_meta($post->ID, Options::getMetaKey('citations'), true);
+		$citationItems = \is_array($rawCitations) ? $rawCitations : [];
+		if (!empty($citationItems)) {
+			$citations = \array_values(\array_filter(\array_map(function (mixed $c) {
+				if (!\is_array($c) || empty($c['label']) || empty($c['url'])) {
+					return null;
+				}
+				$entry = ['@type' => 'CreativeWork', 'name' => (string)$c['label'], 'url' => (string)$c['url']];
+				if (!empty($c['publisher'])) {
+					$entry['publisher'] = ['@type' => 'Organization', 'name' => (string)$c['publisher']];
+				}
+				if (!empty($c['datePublished'])) {
+					$entry['datePublished'] = (string)$c['datePublished'];
+				}
+				return $entry;
+			}, $citationItems)));
+			if (!empty($citations)) {
+				$node['citation'] = $citations;
+			}
+		}
+
+		// Speakable.
+		// get_post_meta returns '' when not set; only treat actual non-empty arrays as custom selectors.
+		$rawSelectors = \get_post_meta($post->ID, Options::getMetaKey('speakableSelectors'), true);
+		$speakableSelectors = \is_array($rawSelectors)
+			? \array_values(\array_filter($rawSelectors, 'strlen'))
+			: [];
+		if (empty($speakableSelectors)) {
+			// Auto selectors — only emit when TL;DR is set so they point at real content.
+			$tldr = (string) \get_post_meta($post->ID, Options::getMetaKey('tldr'), true);
+			if ($tldr !== '') {
+				$speakableSelectors = \apply_filters(
+					Options::getFilter('speakableDefaultSelectors'),
+					['.es-seo-tldr', 'article h2:first-of-type', 'article ul:first-of-type']
+				);
+			}
+		}
+		if (!empty($speakableSelectors)) {
+			$node['speakable'] = [
+				'@type'       => 'SpeakableSpecification',
+				'cssSelector' => \array_values(\array_unique($speakableSelectors)),
+			];
+		}
+
 		$node = \apply_filters(Options::getFilter('articleSchemaNode'), $node, $post);
 
 		if (!empty($node)) {

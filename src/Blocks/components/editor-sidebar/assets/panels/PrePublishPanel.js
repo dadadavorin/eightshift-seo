@@ -40,6 +40,12 @@ export const PrePublishPanel = () => {
 		[]
 	);
 
+	// Block tree for GEO structural checks.
+	const blocks = useSelect(
+		(select) => select('core/block-editor')?.getBlocks() ?? [],
+		[]
+	);
+
 	const [meta, setMeta] = useEntityProp('postType', postType, 'meta');
 	const getMeta = (key) => meta?.[metaKeys?.[key]] ?? '';
 	const setMetaKey = (key, value) =>
@@ -99,7 +105,115 @@ export const PrePublishPanel = () => {
 		]
 		: [];
 
-	const hasIssues = !seoTitle || !seoDesc || featuredImageMissingAlt || keyphraseChecks.some((c) => !c.pass);
+	// ── GEO checks ──────────────────────────────────────────────────────────
+
+	const tldr = getMeta('tldr');
+
+	const citations = (() => {
+		try {
+			const v = getMeta('citations');
+			return Array.isArray(v) ? v : [];
+		} catch {
+			return [];
+		}
+	})();
+
+	const faq = (() => {
+		try {
+			const v = getMeta('faq');
+			return Array.isArray(v) ? v : [];
+		} catch {
+			return [];
+		}
+	})();
+
+	// Flatten block tree to extract headings and images.
+	const headingLevels = [];
+	let imagesWithoutAlt = 0;
+
+	const flattenBlocks = (bs) =>
+		bs.forEach((b) => {
+			if (b.name === 'core/heading') headingLevels.push(b.attributes.level);
+			if (b.name === 'core/image' && !b.attributes.alt) imagesWithoutAlt++;
+			if (b.innerBlocks?.length) flattenBlocks(b.innerBlocks);
+		});
+
+	flattenBlocks(blocks);
+
+	let headingHierarchyOk = true;
+	for (let i = 1; i < headingLevels.length; i++) {
+		if (headingLevels[i] > headingLevels[i - 1] + 1) {
+			headingHierarchyOk = false;
+			break;
+		}
+	}
+
+	// Definition-first: first 200 chars of content contain is/are/means/refers to.
+	const definitionFirstOk = /^[^.!?]*\b(is|are|means|refers to)\b/i.test(contentPlain.slice(0, 200));
+
+	// At least one statistic.
+	const hasStatistic = /\b\d+(\.\d+)?\s?%|\b(in|by|since)\s\d{4}\b/.test(contentPlain);
+
+	const geoChecks = [
+		{
+			label: __('TL;DR / Direct Answer filled', 'eightshift-seo'),
+			pass:  !!tldr,
+			type:  'warn',
+		},
+		{
+			label: __('Definition-first opener', 'eightshift-seo'),
+			pass:  definitionFirstOk,
+			type:  'info',
+		},
+		{
+			label: __('Contains a statistic or data point', 'eightshift-seo'),
+			pass:  hasStatistic,
+			type:  'info',
+		},
+		{
+			label: __('Contains at least one citation', 'eightshift-seo'),
+			pass:  citations.length > 0,
+			type:  'info',
+		},
+		{
+			label: __('Heading hierarchy correct (no skipped levels)', 'eightshift-seo'),
+			pass:  headingHierarchyOk || headingLevels.length === 0,
+			type:  'warn',
+		},
+		{
+			label: imagesWithoutAlt === 0
+				? __('All images have alt text', 'eightshift-seo')
+				: `${imagesWithoutAlt} ${__('image(s) missing alt text', 'eightshift-seo')}`,
+			pass:  imagesWithoutAlt === 0,
+			type:  'warn',
+		},
+		{
+			label: __('FAQ schema added', 'eightshift-seo'),
+			pass:  faq.length > 0,
+			type:  'info',
+		},
+	];
+
+	const tldrMissing = !tldr;
+
+	const hasIssues =
+		!seoTitle ||
+		!seoDesc  ||
+		featuredImageMissingAlt ||
+		tldrMissing ||
+		citations.length === 0 ||
+		keyphraseChecks.some((c) => !c.pass);
+
+	// GEO check icon helper.
+	const geoIcon = (check) => {
+		if (check.pass) return '✓';
+		return check.type === 'warn' ? '⚠' : 'ⓘ';
+	};
+	const geoColor = (check) => {
+		if (check.pass)               return '#00a32a'; // green
+		if (check.type === 'warn')    return '#f0b849'; // orange
+		return '#757575';                               // gray (info)
+	};
 
 	return (
 		<PluginPrePublishPanel
@@ -159,6 +273,32 @@ export const PrePublishPanel = () => {
 					))}
 				</ul>
 			)}
+
+			{/* ── GEO readiness ─────────────────────────────────────────── */}
+			<hr style={{ margin: '12px 0 8px' }} />
+
+			<p style={{ margin: '0 0 6px', fontWeight: 600, fontSize: 13 }}>
+				{__('GEO readiness', 'eightshift-seo')}
+			</p>
+
+			<ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+				{geoChecks.map((check, i) => (
+					<li
+						key={i}
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							gap: '6px',
+							marginBottom: '4px',
+							color: geoColor(check),
+							fontSize: '13px',
+						}}
+					>
+						<span aria-hidden="true">{geoIcon(check)}</span>
+						{check.label}
+					</li>
+				))}
+			</ul>
 		</PluginPrePublishPanel>
 	);
 };

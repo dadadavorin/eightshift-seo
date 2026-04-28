@@ -13,6 +13,7 @@ import { TabPanel } from '@wordpress/components';
 import { SearchAppearancePanel } from './panels/SearchAppearancePanel';
 import { SocialSharingPanel } from './panels/SocialSharingPanel';
 import { AdvancedPanel } from './panels/AdvancedPanel';
+import { GeoPanel } from './panels/GeoPanel';
 import { PrePublishPanel } from './panels/PrePublishPanel';
 
 const { metaKeys } = window.esSeoEditorLocalization ?? {};
@@ -50,6 +51,10 @@ export const SeoPanelPlugin = () => {
 							name: 'advanced',
 							title: __('Advanced', 'eightshift-seo'),
 						},
+						{
+							name: 'geo',
+							title: __('GEO', 'eightshift-seo'),
+						},
 					]}
 				>
 					{(tab) => {
@@ -64,6 +69,14 @@ export const SeoPanelPlugin = () => {
 						if (tab.name === 'social') {
 							return (
 								<SocialSharingPanel
+									getMeta={getMeta}
+									setMetaKey={setMetaKey}
+								/>
+							);
+						}
+						if (tab.name === 'geo') {
+							return (
+								<GeoPanel
 									getMeta={getMeta}
 									setMetaKey={setMetaKey}
 								/>

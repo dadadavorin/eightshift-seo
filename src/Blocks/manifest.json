@@ -48,7 +48,12 @@
 		"unavailableAfter": "es_seo_unavailable_after",
 		"hreflangDisabled": "es_seo_hreflang_disabled",
 		"noai": "es_seo_noai",
-		"noimageai": "es_seo_noimageai"
+		"noimageai": "es_seo_noimageai",
+		"tldr": "es_seo_tldr",
+		"citations": "es_seo_citations",
+		"speakableSelectors": "es_seo_speakable_selectors",
+		"faq": "es_seo_faq",
+		"howto": "es_seo_howto"
 	},
 
 	"termMeta": {
@@ -97,7 +102,12 @@
 		"schemaNodePerson": "es_seo_schema_node_person",
 		"articleSchemaNode": "es_seo_article_schema_node",
 		"webpageSchemaNode": "es_seo_webpage_schema_node",
-		"articleType": "es_seo_article_type"
+		"articleType": "es_seo_article_type",
+		"speakableDefaultSelectors": "es_seo_speakable_default_selectors",
+		"faqRender": "es_seo_faq_render",
+		"howtoRender": "es_seo_howto_render",
+		"citationsRender": "es_seo_citations_render",
+		"llmSitemapEntry": "es_seo_llm_sitemap_entry"
 	},
 
 	"optionsDefaultValue": {
@@ -176,6 +186,13 @@
 			"enabled": true,
 			"defaultPolicy": "allow",
 			"perBot": {}
+		},
+		"llmsTxt": {
+			"enabled": true,
+			"intro": "",
+			"outro": "",
+			"postTypes": ["page", "post"],
+			"perTypeLimit": 200
 		}
 	},
 
