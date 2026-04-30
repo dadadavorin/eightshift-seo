@@ -205,6 +205,11 @@
 		"freshness": {
 			"preserveModifiedOnNonContentSave": false,
 			"stalenessThresholdDays": 365
+		},
+		"botInsights": {
+			"enabled": false,
+			"samplingRate": 1.0,
+			"retentionDays": 90
 		}
 	},
 

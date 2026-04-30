@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace EightshiftSeo\Cli;
 
+use EightshiftSeo\BotInsights\BotCounters;
+use EightshiftSeo\Config\AiBotRegistry;
 use EightshiftSeo\Head\IndexNowKey;
 use EightshiftSeo\Head\IndexNowSubmit;
 use EightshiftSeo\Options\Options;
@@ -443,6 +445,91 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 		$provider->invalidateCache();
 		$content = $provider->generate();
 		\WP_CLI::success('LLM sitemap regenerated (' . \strlen($content) . ' bytes).');
+	}
+
+	/**
+	 * Show AI-bot crawl stats from the bot counters table (Phase 9).
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--days=<days>]
+	 * : Number of days to include (1–365). Default: 30.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp es-seo bots stats
+	 *     wp es-seo bots stats --days=7
+	 *
+	 * @subcommand bots stats
+	 * @param array<string>        $args      Positional arguments.
+	 * @param array<string,string> $assocArgs Named arguments.
+	 *
+	 * @return void
+	 */
+	public function bots_stats(array $args, array $assocArgs): void // phpcs:ignore
+	{
+		$days     = isset($assocArgs['days']) ? (int) $assocArgs['days'] : 30;
+		$counters = new BotCounters();
+		$stats    = $counters->getStats($days);
+		$registry = AiBotRegistry::getBots();
+
+		if (empty($stats['totals'])) {
+			\WP_CLI::warning("No bot hits recorded in the last {$stats['days']} days.");
+			return;
+		}
+
+		$rows = [];
+		foreach ($stats['totals'] as $botId => $hits) {
+			$rows[] = [
+				'bot'    => (string) ($registry[$botId]['name'] ?? $botId),
+				'vendor' => (string) ($registry[$botId]['vendor'] ?? ''),
+				'hits'   => $hits,
+			];
+		}
+
+		\WP_CLI\Utils\format_items('table', $rows, ['bot', 'vendor', 'hits']);
+	}
+
+	/**
+	 * Prune old rows from the bot counters table (Phase 9).
+	 *
+	 * Honours the configured retention window (default: 90 days) and the hard
+	 * row cap (5000 rows).
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp es-seo bots prune
+	 *
+	 * @subcommand bots prune
+	 * @param array<string>        $args      Positional arguments.
+	 * @param array<string,string> $assocArgs Named arguments.
+	 *
+	 * @return void
+	 */
+	public function bots_prune(array $args, array $assocArgs): void // phpcs:ignore
+	{
+		(new BotCounters())->prune();
+		\WP_CLI::success('Bot counters pruned.');
+	}
+
+	/**
+	 * Reset all rows in the bot counters table (Phase 9).
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp es-seo bots reset --yes
+	 *
+	 * @subcommand bots reset
+	 * @param array<string>        $args      Positional arguments.
+	 * @param array<string,string> $assocArgs Named arguments.
+	 *
+	 * @return void
+	 */
+	public function bots_reset(array $args, array $assocArgs): void // phpcs:ignore
+	{
+		\WP_CLI::confirm('This will delete all recorded AI-bot counters. Continue?', $assocArgs);
+		(new BotCounters())->reset();
+		\WP_CLI::success('Bot counters reset.');
 	}
 
 	/**

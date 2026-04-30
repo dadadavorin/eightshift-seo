@@ -63,3 +63,14 @@ $termMetaKeys = [
 foreach ($termMetaKeys as $key) {
 	$wpdb->delete($wpdb->termmeta, ['meta_key' => $key]); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 }
+
+// Drop the AI bot counters table and clear its schema marker (Phase 9).
+$botCountersTable = $wpdb->prefix . 'es_seo_bot_counters';
+$wpdb->query("DROP TABLE IF EXISTS {$botCountersTable}"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+delete_option('es_seo_bot_counters_schema');
+
+// Clear the prune cron in case it was scheduled.
+$timestamp = wp_next_scheduled('es_seo_bot_counters_prune');
+if ($timestamp) {
+	wp_unschedule_event($timestamp, 'es_seo_bot_counters_prune');
+}

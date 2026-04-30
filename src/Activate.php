@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace EightshiftSeo;
 
+use EightshiftSeo\BotInsights\BotCounters;
 use EightshiftSeoVendor\EightshiftLibs\Plugin\HasActivationInterface;
 use WP_Role;
 
@@ -54,5 +55,8 @@ class Activate implements HasActivationInterface
 
 		// Flush rewrite rules so the sitemap endpoint is available.
 		\flush_rewrite_rules();
+
+		// Install the AI bot counters table (Phase 9). Idempotent via dbDelta.
+		BotCounters::installSchema();
 	}
 }

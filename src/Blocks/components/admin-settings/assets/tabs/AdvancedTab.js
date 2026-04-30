@@ -4,7 +4,9 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { CheckboxControl, SelectControl, ToggleControl, RangeControl } from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
+import { Button, CheckboxControl, Notice, SelectControl, ToggleControl, RangeControl } from '@wordpress/components';
 
 const { taxonomies } = window.esSeoLocalization ?? {};
 
@@ -68,6 +70,28 @@ export const AdvancedTab = ({ settings, onChange }) => {
 	const freshness = settings.freshness ?? { preserveModifiedOnNonContentSave: false, stalenessThresholdDays: 365 };
 	const setFreshness = (key, value) =>
 		onChange({ ...settings, freshness: { ...freshness, [key]: value } });
+
+	const botInsights = settings.botInsights ?? { enabled: false, samplingRate: 1.0, retentionDays: 90 };
+	const setBotInsights = (key, value) =>
+		onChange({ ...settings, botInsights: { ...botInsights, [key]: value } });
+
+	const [resetNotice, setResetNotice] = useState(null);
+	const [isResetting, setIsResetting] = useState(false);
+
+	const resetBotCounters = () => {
+		if (!window.confirm(__('Delete all recorded AI-bot counters? This cannot be undone.', 'eightshift-seo'))) {
+			return;
+		}
+		setIsResetting(true);
+		setResetNotice(null);
+		apiFetch({
+			path: '/es-seo/v1/bot-insights/reset',
+			method: 'POST',
+		})
+			.then(() => setResetNotice({ type: 'success', message: __('Bot counters cleared.', 'eightshift-seo') }))
+			.catch(() => setResetNotice({ type: 'error', message: __('Failed to clear bot counters.', 'eightshift-seo') }))
+			.finally(() => setIsResetting(false));
+	};
 
 	return (
 		<div className="es-seo-tab">
@@ -215,6 +239,59 @@ export const AdvancedTab = ({ settings, onChange }) => {
 				step={30}
 				__nextHasNoMarginBottom
 			/>
+
+			<hr id="bot-insights" />
+
+			<h3>{__('AI bot traffic insights', 'eightshift-seo')}</h3>
+			<p className="description">
+				{__('Track how often known AI crawlers hit your site. Counters are aggregated per day and per bot — no IPs, URLs, or request bodies are stored.', 'eightshift-seo')}
+			</p>
+
+			<ToggleControl
+				label={__('Enable bot traffic tracking', 'eightshift-seo')}
+				help={__('Adds a single INSERT per request only when a known AI bot is detected. Human visitors incur zero database writes.', 'eightshift-seo')}
+				checked={!!botInsights.enabled}
+				onChange={(val) => setBotInsights('enabled', val)}
+				__nextHasNoMarginBottom
+			/>
+
+			{botInsights.enabled && (
+				<>
+					<RangeControl
+						label={__('Retention (days)', 'eightshift-seo')}
+						help={__('Older rows are pruned daily. Table size is bounded — at most ~20 bots × retention days.', 'eightshift-seo')}
+						value={botInsights.retentionDays ?? 90}
+						onChange={(val) => setBotInsights('retentionDays', val)}
+						min={30}
+						max={365}
+						step={30}
+						__nextHasNoMarginBottom
+					/>
+
+					<RangeControl
+						label={__('Sampling rate', 'eightshift-seo')}
+						help={__('Fraction of bot hits to record. Lower this on extremely high-traffic sites (e.g. 0.1 = log every tenth hit).', 'eightshift-seo')}
+						value={Math.round(((botInsights.samplingRate ?? 1) * 100))}
+						onChange={(val) => setBotInsights('samplingRate', Math.max(0.01, Math.min(1, val / 100)))}
+						min={1}
+						max={100}
+						step={1}
+						__nextHasNoMarginBottom
+					/>
+
+					<p style={{ marginTop: 12 }}>
+						<Button variant="secondary" isDestructive isBusy={isResetting} onClick={resetBotCounters}>
+							{__('Reset counters', 'eightshift-seo')}
+						</Button>
+					</p>
+
+					{resetNotice && (
+						<Notice status={resetNotice.type} isDismissible onRemove={() => setResetNotice(null)}>
+							{resetNotice.message}
+						</Notice>
+					)}
+				</>
+			)}
 		</div>
 	);
 };
