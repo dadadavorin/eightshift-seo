@@ -19,10 +19,10 @@ use EightshiftSeo\Options\Options;
 /**
  * SeoCommand — WP-CLI commands registered under `wp es-seo`.
  *
- * Registers itself via ServiceInterface::register() so the DI container
- * picks it up automatically. WP-CLI is detected via the WP_CLI constant.
+ * Registers itself via ServiceCliInterface::register() so the DI container
+ * picks it up automatically in CLI contexts.
  */
-class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\ServiceInterface
+class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\ServiceCliInterface
 {
 	/**
 	 * Register the CLI command when WP-CLI is present.
@@ -457,10 +457,10 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp es-seo bots stats
-	 *     wp es-seo bots stats --days=7
+	 *     wp es-seo bots-stats
+	 *     wp es-seo bots-stats --days=7
 	 *
-	 * @subcommand bots stats
+	 * @subcommand bots-stats
 	 * @param array<string>        $args      Positional arguments.
 	 * @param array<string,string> $assocArgs Named arguments.
 	 *
@@ -498,9 +498,9 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp es-seo bots prune
+	 *     wp es-seo bots-prune
 	 *
-	 * @subcommand bots prune
+	 * @subcommand bots-prune
 	 * @param array<string>        $args      Positional arguments.
 	 * @param array<string,string> $assocArgs Named arguments.
 	 *
@@ -517,9 +517,9 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp es-seo bots reset --yes
+	 *     wp es-seo bots-reset --yes
 	 *
-	 * @subcommand bots reset
+	 * @subcommand bots-reset
 	 * @param array<string>        $args      Positional arguments.
 	 * @param array<string,string> $assocArgs Named arguments.
 	 *
