@@ -168,6 +168,12 @@ class ArticleSchema implements ServiceInterface
 			}
 		}
 
+		// Last reviewed date (Phase 8 — content freshness).
+		$reviewed = (string) \get_post_meta($post->ID, Options::getMetaKey('dateReviewed'), true);
+		if ($reviewed !== '' && \preg_match('/^\d{4}-\d{2}-\d{2}$/', $reviewed)) {
+			$node['dateReviewed'] = $reviewed;
+		}
+
 		// Speakable.
 		// get_post_meta returns '' when not set; only treat actual non-empty arrays as custom selectors.
 		$rawSelectors = \get_post_meta($post->ID, Options::getMetaKey('speakableSelectors'), true);

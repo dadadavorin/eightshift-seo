@@ -3,7 +3,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { ToggleControl, SelectControl, ExternalLink, Notice } from '@wordpress/components';
+import { ToggleControl, SelectControl, ExternalLink, Notice, Button } from '@wordpress/components';
 
 /**
  * Bots grouped by vendor. Mirrors AiBotRegistry::getBots() on the PHP side.
@@ -88,6 +88,26 @@ const LAST_VERIFIED = '2026-04-27';
 
 export const AiCrawlersTab = ({ settings, onChange }) => {
 	const ai = settings.aiCrawlers ?? { enabled: true, defaultPolicy: 'allow', perBot: {} };
+
+	// LLM sitemap settings (Phase 8.4) live under sitemap.llmSitemap.
+	const sitemap = settings.sitemap ?? {};
+	const llmSitemap = sitemap.llmSitemap ?? { enabled: true, includeMd: true, postTypes: [] };
+	const setLlmSitemap = (key, value) =>
+		onChange({
+			...settings,
+			sitemap: {
+				...sitemap,
+				llmSitemap: { ...llmSitemap, [key]: value },
+			},
+		});
+
+	const llmSitemapUrl = (typeof window !== 'undefined' ? window.location.origin : '') + '/llm-sitemap.xml';
+	const robotsLine    = `Sitemap: ${llmSitemapUrl}`;
+	const copyRobotsLine = () => {
+		if (navigator?.clipboard) {
+			navigator.clipboard.writeText(robotsLine).catch(() => {});
+		}
+	};
 
 	const setAi = (key, value) =>
 		onChange({ ...settings, aiCrawlers: { ...ai, [key]: value } });
@@ -206,6 +226,58 @@ export const AiCrawlersTab = ({ settings, onChange }) => {
 							})}
 						</div>
 					))}
+				</>
+			)}
+
+			<hr />
+
+			<h3>{__('AI-targeted sitemap', 'eightshift-seo')}</h3>
+			<p className="description">
+				{__('A separate sitemap variant tuned for AI crawlers. Lists canonical singular URLs together with their .md siblings and dateReviewed metadata when available.', 'eightshift-seo')}
+			</p>
+
+			<ToggleControl
+				label={__('Enable /llm-sitemap.xml', 'eightshift-seo')}
+				checked={llmSitemap.enabled !== false}
+				onChange={(val) => setLlmSitemap('enabled', val)}
+				__nextHasNoMarginBottom
+			/>
+
+			{llmSitemap.enabled !== false && (
+				<>
+					<ToggleControl
+						label={__('Include .md variants', 'eightshift-seo')}
+						help={__('Adds a sibling entry for each post pointing at its Markdown variant (requires the Markdown endpoint to be active).', 'eightshift-seo')}
+						checked={llmSitemap.includeMd !== false}
+						onChange={(val) => setLlmSitemap('includeMd', val)}
+						__nextHasNoMarginBottom
+					/>
+
+					<p className="description" style={{ marginTop: 12 }}>
+						{__('Recommended robots.txt directive (point AI crawlers to the variant):', 'eightshift-seo')}
+					</p>
+					<pre
+						style={{
+							background: '#f6f7f7',
+							padding: '8px 10px',
+							border: '1px solid #c3c4c7',
+							borderRadius: 4,
+							fontSize: 12,
+							margin: '4px 0 8px',
+						}}
+					>{robotsLine}</pre>
+					<Button variant="secondary" size="small" onClick={copyRobotsLine}>
+						{__('Copy directive', 'eightshift-seo')}
+					</Button>
+					{' '}
+					<a
+						href={llmSitemapUrl}
+						target="_blank"
+						rel="noreferrer noopener"
+						style={{ marginLeft: 8 }}
+					>
+						{__('View /llm-sitemap.xml', 'eightshift-seo')}
+					</a>
 				</>
 			)}
 		</div>

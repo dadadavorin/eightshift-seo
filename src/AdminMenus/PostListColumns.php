@@ -75,10 +75,7 @@ class PostListColumns implements ServiceInterface
 	 */
 	public function addColumns(array $columns): array
 	{
-		$columns['es_seo_title']       = \esc_html__('SEO title', 'eightshift-seo');
-		$columns['es_seo_description'] = \esc_html__('Meta description', 'eightshift-seo');
-		$columns['es_seo_noindex']     = \esc_html__('Noindex', 'eightshift-seo');
-		$columns['es_seo_keyphrase']   = \esc_html__('Focus keyphrase', 'eightshift-seo');
+		$columns['es_seo_noindex'] = \esc_html__('Noindex', 'eightshift-seo');
 
 		return $columns;
 	}
@@ -107,7 +104,7 @@ class PostListColumns implements ServiceInterface
 	public function renderColumn(string $column, int $postId): void
 	{
 		switch ($column) {
-			case 'es_seo_title':
+			case 'es_seo_noindex':
 				// Emit data-* attributes used by Quick Edit JS hydration.
 				echo '<span hidden class="es-seo-row-data"'
 					. ' data-seo-title="' . \esc_attr((string) \get_post_meta($postId, Options::getMetaKey('title'), true)) . '"'
@@ -115,22 +112,6 @@ class PostListColumns implements ServiceInterface
 					. ' data-seo-keyphrase="' . \esc_attr((string) \get_post_meta($postId, Options::getMetaKey('focusKeyphrase'), true)) . '"'
 					. ' data-seo-noindex="' . \esc_attr(\get_post_meta($postId, Options::getMetaKey('noindex'), true) ? '1' : '0') . '"'
 					. '></span>';
-				$this->renderTextCell(
-					(string) \get_post_meta($postId, Options::getMetaKey('title'), true),
-					self::TITLE_MIN,
-					self::TITLE_MAX
-				);
-				break;
-
-			case 'es_seo_description':
-				$this->renderTextCell(
-					(string) \get_post_meta($postId, Options::getMetaKey('description'), true),
-					self::DESC_MIN,
-					self::DESC_MAX
-				);
-				break;
-
-			case 'es_seo_noindex':
 				$noindex = (bool) \get_post_meta($postId, Options::getMetaKey('noindex'), true);
 				if ($noindex) {
 					echo '<span class="es-seo-pill es-seo-pill--warn">' . \esc_html__('Noindex', 'eightshift-seo') . '</span>';
@@ -225,10 +206,10 @@ class PostListColumns implements ServiceInterface
 			--es-seo-bad: #d63638;
 			--es-seo-muted: #8c8f94;
 		}
-		.column-es_seo_title,
-		.column-es_seo_description { min-width: 180px; max-width: 260px; }
-		.column-es_seo_noindex,
-		.column-es_seo_keyphrase { min-width: 90px; }
+		.column-title { width: 200px; }
+		.column-featuredImage { width: 60px; }
+		.column-es_post_type { width: 60px; }
+		.column-es_seo_noindex { width: 70px; }
 		.es-seo-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 		.es-seo-cell__value { color: #1d2327; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-word; }
 		.es-seo-length { font-size: 11px; line-height: 1.3; }

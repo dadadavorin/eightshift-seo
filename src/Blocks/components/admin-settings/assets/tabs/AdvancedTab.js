@@ -4,7 +4,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { CheckboxControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { CheckboxControl, SelectControl, ToggleControl, RangeControl } from '@wordpress/components';
 
 const { taxonomies } = window.esSeoLocalization ?? {};
 
@@ -64,6 +64,10 @@ export const AdvancedTab = ({ settings, onChange }) => {
 
 	const setImages = (key, value) =>
 		onChange({ ...settings, images: { ...images, [key]: value } });
+
+	const freshness = settings.freshness ?? { preserveModifiedOnNonContentSave: false, stalenessThresholdDays: 365 };
+	const setFreshness = (key, value) =>
+		onChange({ ...settings, freshness: { ...freshness, [key]: value } });
 
 	return (
 		<div className="es-seo-tab">
@@ -183,6 +187,32 @@ export const AdvancedTab = ({ settings, onChange }) => {
 				help={__('Adds an image sitemap at /wp-sitemap-es-seo-images-1.xml for featured and content images.', 'eightshift-seo')}
 				checked={images.includeSitemap !== false}
 				onChange={(val) => setImages('includeSitemap', val)}
+				__nextHasNoMarginBottom
+			/>
+
+			<hr />
+
+			<h3>{__('Content freshness', 'eightshift-seo')}</h3>
+			<p className="description">
+				{__('AI engines weight dateModified heavily. These settings keep that signal honest.', 'eightshift-seo')}
+			</p>
+
+			<ToggleControl
+				label={__('Preserve modified date on non-content saves', 'eightshift-seo')}
+				help={__('When enabled, post_modified is only bumped when the content body actually changes. Quick edits to taxonomies or sidebar fields will not refresh the timestamp.', 'eightshift-seo')}
+				checked={!!freshness.preserveModifiedOnNonContentSave}
+				onChange={(val) => setFreshness('preserveModifiedOnNonContentSave', val)}
+				__nextHasNoMarginBottom
+			/>
+
+			<RangeControl
+				label={__('Staleness threshold (days)', 'eightshift-seo')}
+				help={__('Health check warns when published posts have not been updated in this many days.', 'eightshift-seo')}
+				value={freshness.stalenessThresholdDays ?? 365}
+				onChange={(val) => setFreshness('stalenessThresholdDays', val)}
+				min={30}
+				max={1095}
+				step={30}
 				__nextHasNoMarginBottom
 			/>
 		</div>

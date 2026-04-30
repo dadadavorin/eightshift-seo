@@ -20,6 +20,7 @@ use EightshiftSeo\Health\Checks\HomepageTitleTemplateCheck;
 use EightshiftSeo\Health\Checks\MissingMetaDescriptionCheck;
 use EightshiftSeo\Health\Checks\SiteRepresentationCompleteCheck;
 use EightshiftSeo\Health\Checks\SitemapReachableCheck;
+use EightshiftSeo\Health\Checks\StaleContentCheck;
 use EightshiftSeo\Health\Checks\VerificationConfiguredCheck;
 use EightshiftSeo\Options\Options;
 use EightshiftSeoVendor\EightshiftLibs\Services\ServiceInterface;
@@ -181,6 +182,8 @@ class HealthDashboard implements ServiceInterface
 			new AuthorsHaveBioCheck(),
 			new SiteRepresentationCompleteCheck(),
 			new ArticleSchemaCoverageCheck(),
+			// Phase 8 — content freshness.
+			new StaleContentCheck(),
 		];
 	}
 }

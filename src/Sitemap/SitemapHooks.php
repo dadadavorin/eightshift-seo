@@ -173,10 +173,19 @@ class SitemapHooks implements ServiceInterface
 		$sitemapUrl = \home_url('/wp-sitemap.xml');
 
 		// Avoid duplicate entries if already present.
-		if (\str_contains($output, $sitemapUrl)) {
-			return $output;
+		if (!\str_contains($output, $sitemapUrl)) {
+			$output = \rtrim($output) . "\nSitemap: " . $sitemapUrl . "\n";
 		}
 
-		return \rtrim($output) . "\nSitemap: " . $sitemapUrl . "\n";
+		// Phase 8 — also advertise the LLM-targeted sitemap variant when enabled.
+		if (Options::getOptionChecked(['sitemap', 'llmSitemap', 'enabled'])) {
+			$llmSitemapUrl = \home_url('/llm-sitemap.xml');
+
+			if (!\str_contains($output, $llmSitemapUrl)) {
+				$output = \rtrim($output) . "\nSitemap: " . $llmSitemapUrl . "\n";
+			}
+		}
+
+		return $output;
 	}
 }

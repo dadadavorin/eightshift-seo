@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "es-seo/statistic",
+  "version": "1.0.0",
+  "title": "Statistic",
+  "category": "text",
+  "description": "A standalone statistic with optional source attribution. Contributes a structured Claim entry to the post's schema graph.",
+  "textdomain": "eightshift-seo",
+  "keywords": [
+    "statistic",
+    "data",
+    "geo",
+    "ai"
+  ],
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "className": true
+  },
+  "attributes": {
+    "value": {
+      "type": "string",
+      "default": ""
+    },
+    "label": {
+      "type": "string",
+      "default": ""
+    },
+    "source": {
+      "type": "string",
+      "default": ""
+    },
+    "sourceUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "datePublished": {
+      "type": "string",
+      "default": ""
+    }
+  }
+}

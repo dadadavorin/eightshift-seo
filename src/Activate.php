@@ -47,6 +47,11 @@ class Activate implements HasActivationInterface
 			}
 		}
 
+		// Register LLM endpoint rewrite rules before flushing so they are
+		// included in the regenerated rule set (init has not fired yet here).
+		\add_rewrite_rule('^llm-sitemap\.xml$', 'index.php?es_seo_llm_sitemap=1', 'top');
+		\add_rewrite_rule('^llms\.txt$', 'index.php?es_seo_llms_txt=1', 'top');
+
 		// Flush rewrite rules so the sitemap endpoint is available.
 		\flush_rewrite_rules();
 	}

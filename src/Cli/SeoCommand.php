@@ -406,6 +406,46 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 	}
 
 	/**
+	 * Print the LLM sitemap URL list, one per line (Phase 8).
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp es-seo sitemap llm
+	 *
+	 * @subcommand sitemap llm
+	 * @param array<string>        $args      Positional arguments.
+	 * @param array<string,string> $assocArgs Named arguments.
+	 *
+	 * @return void
+	 */
+	public function sitemap_llm(array $args, array $assocArgs): void // phpcs:ignore
+	{
+		$provider = new \EightshiftSeo\Sitemap\LlmSitemapProvider();
+		\WP_CLI::line($provider->generate());
+	}
+
+	/**
+	 * Regenerate cached sitemap variants (Phase 8 — LLM sitemap).
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp es-seo sitemap regenerate
+	 *
+	 * @subcommand sitemap regenerate
+	 * @param array<string>        $args      Positional arguments.
+	 * @param array<string,string> $assocArgs Named arguments.
+	 *
+	 * @return void
+	 */
+	public function sitemap_regenerate(array $args, array $assocArgs): void // phpcs:ignore
+	{
+		$provider = new \EightshiftSeo\Sitemap\LlmSitemapProvider();
+		$provider->invalidateCache();
+		$content = $provider->generate();
+		\WP_CLI::success('LLM sitemap regenerated (' . \strlen($content) . ' bytes).');
+	}
+
+	/**
 	 * Recursively keep only the keys present in $defaults.
 	 *
 	 * @param array<mixed> $input    Input settings array.

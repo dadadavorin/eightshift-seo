@@ -7,7 +7,7 @@
 
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { TextControl, TextareaControl, Button } from '@wordpress/components';
+import { TextControl, TextareaControl, Button, ToggleControl } from '@wordpress/components';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -119,6 +119,18 @@ export const GeoPanel = ({ getMeta, setMetaKey }) => {
 		const arr = text.split('\n').map((s) => s.trim()).filter(Boolean);
 		setMetaKey('speakableSelectors', arr);
 	};
+
+	// ── Freshness (Phase 8) ──────────────────────────────────────────────────
+	const dateReviewed = getMeta('dateReviewed') || '';
+	const markReviewedToday = () => {
+		const today = new Date().toISOString().slice(0, 10);
+		setMetaKey('dateReviewed', today);
+	};
+
+	// ── Definition-first (Phase 8) ───────────────────────────────────────────
+	const definitionTerm = getMeta('definitionTerm') || '';
+	const [showDefinition, setShowDefinition] = useState(false);
+	const definitionEnabled = definitionTerm !== '';
 
 	// ── Render ───────────────────────────────────────────────────────────────
 	return (
@@ -394,6 +406,60 @@ export const GeoPanel = ({ getMeta, setMetaKey }) => {
 						value={speakableText}
 						onChange={setSpeakable}
 						rows={4}
+						__nextHasNoMarginBottom
+					/>
+				</div>
+			)}
+
+			<hr />
+
+			{/* ── Freshness (Phase 8) ─────────────────────────────────────── */}
+			<div style={{ marginBottom: 8 }}>
+				<TextControl
+					label={__('Last reviewed', 'eightshift-seo')}
+					help={__('Date this content was last fact-checked or refreshed. Surfaces as schema.org dateReviewed.', 'eightshift-seo')}
+					type="date"
+					value={dateReviewed}
+					onChange={(val) => setMetaKey('dateReviewed', val)}
+					__nextHasNoMarginBottom
+				/>
+				<Button
+					variant="secondary"
+					size="small"
+					onClick={markReviewedToday}
+					style={{ marginTop: 6 }}
+				>
+					{__('Mark as reviewed today', 'eightshift-seo')}
+				</Button>
+			</div>
+
+			<hr />
+
+			{/* ── Definition-first (Phase 8) ──────────────────────────────── */}
+			<Button
+				variant="link"
+				onClick={() => setShowDefinition((v) => !v)}
+				style={{ marginBottom: 8 }}
+			>
+				{showDefinition
+					? __('Hide definition-first ▲', 'eightshift-seo')
+					: __('Show definition-first ▼', 'eightshift-seo')}
+			</Button>
+
+			{showDefinition && (
+				<div style={{ marginTop: 4 }}>
+					<ToggleControl
+						label={__('Use definition-first opener', 'eightshift-seo')}
+						help={__('When enabled, this post is treated as defining the term below. A DefinedTerm node is contributed to the schema graph.', 'eightshift-seo')}
+						checked={definitionEnabled}
+						onChange={(checked) => setMetaKey('definitionTerm', checked ? definitionTerm || '' : '')}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={__('Defined term', 'eightshift-seo')}
+						help={__('The exact term this post defines. Leave empty to auto-detect from the first paragraph.', 'eightshift-seo')}
+						value={definitionTerm}
+						onChange={(val) => setMetaKey('definitionTerm', val)}
 						__nextHasNoMarginBottom
 					/>
 				</div>

@@ -127,14 +127,18 @@ export const PrePublishPanel = () => {
 		}
 	})();
 
-	// Flatten block tree to extract headings and images.
+	// Flatten block tree to extract headings, images, and Phase 8 authoring blocks.
 	const headingLevels = [];
 	let imagesWithoutAlt = 0;
+	let statisticBlocks = 0;
+	let quoteBlocks     = 0;
 
 	const flattenBlocks = (bs) =>
 		bs.forEach((b) => {
 			if (b.name === 'core/heading') headingLevels.push(b.attributes.level);
 			if (b.name === 'core/image' && !b.attributes.alt) imagesWithoutAlt++;
+			if (b.name === 'es-seo/statistic') statisticBlocks++;
+			if (b.name === 'es-seo/expert-quote') quoteBlocks++;
 			if (b.innerBlocks?.length) flattenBlocks(b.innerBlocks);
 		});
 
@@ -190,6 +194,13 @@ export const PrePublishPanel = () => {
 		{
 			label: __('FAQ schema added', 'eightshift-seo'),
 			pass:  faq.length > 0,
+			type:  'info',
+		},
+		{
+			label: statisticBlocks + quoteBlocks > 0
+				? __('Statistic or expert quote block present', 'eightshift-seo')
+				: __('No Statistic / Expert Quote blocks — consider adding one', 'eightshift-seo'),
+			pass:  statisticBlocks + quoteBlocks > 0,
 			type:  'info',
 		},
 	];

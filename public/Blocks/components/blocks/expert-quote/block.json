@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "es-seo/expert-quote",
+  "version": "1.0.0",
+  "title": "Expert Quote",
+  "category": "text",
+  "description": "A pull quote with structured author attribution. Contributes a Quotation entry to the post's schema graph.",
+  "textdomain": "eightshift-seo",
+  "keywords": [
+    "quote",
+    "pullquote",
+    "expert",
+    "geo",
+    "ai"
+  ],
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "className": true
+  },
+  "attributes": {
+    "quote": {
+      "type": "string",
+      "default": ""
+    },
+    "author": {
+      "type": "string",
+      "default": ""
+    },
+    "authorTitle": {
+      "type": "string",
+      "default": ""
+    },
+    "authorUrl": {
+      "type": "string",
+      "default": ""
+    }
+  }
+}

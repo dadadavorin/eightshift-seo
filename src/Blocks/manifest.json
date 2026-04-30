@@ -53,7 +53,9 @@
 		"citations": "es_seo_citations",
 		"speakableSelectors": "es_seo_speakable_selectors",
 		"faq": "es_seo_faq",
-		"howto": "es_seo_howto"
+		"howto": "es_seo_howto",
+		"dateReviewed": "es_seo_date_reviewed",
+		"definitionTerm": "es_seo_definition_term"
 	},
 
 	"termMeta": {
@@ -107,7 +109,8 @@
 		"faqRender": "es_seo_faq_render",
 		"howtoRender": "es_seo_howto_render",
 		"citationsRender": "es_seo_citations_render",
-		"llmSitemapEntry": "es_seo_llm_sitemap_entry"
+		"llmSitemapEntry": "es_seo_llm_sitemap_entry",
+		"definedTermSchemaNode": "es_seo_defined_term_schema_node"
 	},
 
 	"optionsDefaultValue": {
@@ -129,7 +132,12 @@
 		"sitemap": {
 			"excludedPostTypes": [],
 			"excludedTaxonomies": [],
-			"addToRobotsTxt": true
+			"addToRobotsTxt": true,
+			"llmSitemap": {
+				"enabled": true,
+				"includeMd": true,
+				"postTypes": []
+			}
 		},
 		"breadcrumbs": {
 			"enableSchema": true,
@@ -193,6 +201,10 @@
 			"outro": "",
 			"postTypes": ["page", "post"],
 			"perTypeLimit": 200
+		},
+		"freshness": {
+			"preserveModifiedOnNonContentSave": false,
+			"stalenessThresholdDays": 365
 		}
 	},
 
