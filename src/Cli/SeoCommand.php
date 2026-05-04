@@ -70,7 +70,12 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 		$json = (string) \wp_json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 		if (isset($assocArgs['file'])) {
-			$file = (string) $assocArgs['file'];
+			$file    = (string) $assocArgs['file'];
+			$realDir = \realpath(\dirname($file)) ?: '';
+			if ($realDir === '' || !\str_starts_with($realDir, \rtrim(\ABSPATH, '/\\') . \DIRECTORY_SEPARATOR)) {
+				\WP_CLI::error('File path must be inside the WordPress root directory.');
+				return;
+			}
 			\file_put_contents($file, $json); // phpcs:ignore WordPress.WP.AlternativeFunctions
 			\WP_CLI::success("Settings exported to {$file}");
 		} else {
@@ -105,7 +110,13 @@ class SeoCommand implements \EightshiftSeoVendor\EightshiftLibs\Services\Service
 			return;
 		}
 
-		$raw      = (string) \file_get_contents($file); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		$realPath = \realpath($file) ?: '';
+		if ($realPath === '' || !\str_starts_with($realPath, \rtrim(\ABSPATH, '/\\') . \DIRECTORY_SEPARATOR)) {
+			\WP_CLI::error('File path must be inside the WordPress root directory.');
+			return;
+		}
+
+		$raw      = (string) \file_get_contents($realPath); // phpcs:ignore WordPress.WP.AlternativeFunctions
 		$settings = \json_decode($raw, true);
 
 		if (!\is_array($settings)) {

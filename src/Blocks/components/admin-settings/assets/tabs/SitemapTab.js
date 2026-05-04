@@ -20,6 +20,10 @@ export const SitemapTab = ({ settings, onChange }) => {
 			: [...current, value];
 	};
 
+	// Detect duplicate display names to append the slug for disambiguation.
+	const ptNameCounts  = (postTypes  ?? []).reduce((acc, p) => { acc[p.name] = (acc[p.name] ?? 0) + 1; return acc; }, {});
+	const taxNameCounts = (taxonomies ?? []).reduce((acc, t) => { acc[t.name] = (acc[t.name] ?? 0) + 1; return acc; }, {});
+
 	return (
 		<div className="es-seo-tab">
 			<h2>{__('Sitemap', 'eightshift-seo')}</h2>
@@ -31,7 +35,7 @@ export const SitemapTab = ({ settings, onChange }) => {
 			{(postTypes ?? []).map((pt) => (
 				<CheckboxControl
 					key={pt.slug}
-					label={pt.name}
+					label={ptNameCounts[pt.name] > 1 ? `${pt.name} (${pt.slug})` : pt.name}
 					checked={(sitemap.excludedPostTypes ?? []).includes(pt.slug)}
 					onChange={() =>
 						setSitemap('excludedPostTypes', toggleArray(sitemap.excludedPostTypes, pt.slug))
@@ -44,7 +48,7 @@ export const SitemapTab = ({ settings, onChange }) => {
 			{(taxonomies ?? []).map((tax) => (
 				<CheckboxControl
 					key={tax.slug}
-					label={tax.name}
+					label={taxNameCounts[tax.name] > 1 ? `${tax.name} (${tax.slug})` : tax.name}
 					checked={(sitemap.excludedTaxonomies ?? []).includes(tax.slug)}
 					onChange={() =>
 						setSitemap('excludedTaxonomies', toggleArray(sitemap.excludedTaxonomies, tax.slug))

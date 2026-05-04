@@ -120,16 +120,18 @@ export const AdminApp = () => {
 				)}
 			</div>
 
-			<div className="es-seo-admin__footer">
-				<Button
-					variant="primary"
-					onClick={save}
-					isBusy={isSaving}
-					disabled={isSaving}
-				>
-					{isSaving ? __('Saving…', 'eightshift-seo') : __('Save settings', 'eightshift-seo')}
-				</Button>
-			</div>
+			{activeTab !== 'health' && (
+				<div className="es-seo-admin__footer">
+					<Button
+						variant="primary"
+						onClick={save}
+						isBusy={isSaving}
+						disabled={isSaving}
+					>
+						{isSaving ? __('Saving…', 'eightshift-seo') : __('Save settings', 'eightshift-seo')}
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 };

@@ -32,7 +32,7 @@ use WP_Term;
  *   %primary_category%  — primary category meta or first assigned category
  *   %category%          — comma-separated category names
  *   %tag%               — comma-separated tag names
- *   %page%, %pagenumber% — current page on paginated content
+ *   %page%              — current page on paginated content
  *   %pagetotal%         — total pages for paginated content
  *   %search_phrase%     — get_search_query() on search pages
  *   %current_year%      — current year (date_i18n)
@@ -94,7 +94,6 @@ class TemplateResolver
 			'%category%'         => '',
 			'%tag%'              => '',
 			'%page%'             => '',
-			'%pagenumber%'       => '',
 			'%pagetotal%'        => '',
 			'%search_phrase%'    => '',
 			'%current_year%'     => (string) \date_i18n('Y'),
@@ -111,9 +110,8 @@ class TemplateResolver
 		$current   = \max(1, $paged > 0 ? $paged : $page);
 		$pageTotal = self::getPageTotal();
 
-		$tokens['%page%']       = (string) $current;
-		$tokens['%pagenumber%'] = (string) $current;
-		$tokens['%pagetotal%']  = (string) $pageTotal;
+		$tokens['%page%']      = (string) $current;
+		$tokens['%pagetotal%'] = (string) $pageTotal;
 
 		if (\is_search()) {
 			$tokens['%search_phrase%'] = (string) \get_search_query();
@@ -264,6 +262,14 @@ class TemplateResolver
 		$content = \wp_strip_all_tags($content);
 		$content = \trim(\preg_replace('/\s+/', ' ', $content) ?? '');
 
-		return \mb_substr($content, 0, 160);
+		if (\mb_strlen($content) <= 160) {
+			return $content;
+		}
+
+		// Trim at a word boundary so the description never ends mid-word.
+		$trimmed   = \mb_substr($content, 0, 160);
+		$lastSpace = \mb_strrpos($trimmed, ' ');
+
+		return $lastSpace !== false ? \mb_substr($trimmed, 0, $lastSpace) : $trimmed;
 	}
 }

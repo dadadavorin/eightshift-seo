@@ -112,7 +112,7 @@ export const LlmsTxtTab = ({ settings, onChange }) => {
 					<div style={{ marginTop: 16 }}>
 						<RangeControl
 							label={__('Per-type limit', 'eightshift-seo')}
-							help={__('Maximum number of entries to include per post type.', 'eightshift-seo')}
+							help={__('Maximum number of entries to include per post type. Total output is capped at 256 KB regardless of this setting.', 'eightshift-seo')}
 							value={perTypeLimit}
 							onChange={(val) => set('perTypeLimit', val)}
 							min={50}

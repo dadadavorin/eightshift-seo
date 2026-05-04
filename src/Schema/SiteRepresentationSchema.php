@@ -51,16 +51,39 @@ class SiteRepresentationSchema implements ServiceInterface
 	 */
 	public function addRepresentationNode(array $graph, array $context): array
 	{
+		// WebSite node — always emitted so WebPage/Article isPartOf references resolve.
+		$graph[] = $this->buildWebSiteNode();
+
 		$node = $this->buildSchema();
 		$node = \apply_filters(Options::getFilter('siteRepresentationSchema'), $node);
 
-		if (empty($node) || !\is_array($node)) {
-			return $graph;
+		if (!empty($node) && \is_array($node)) {
+			$graph[] = $node;
 		}
 
-		$graph[] = $node;
-
 		return $graph;
+	}
+
+	/**
+	 * Build the WebSite node referenced by WebPage and Article nodes via isPartOf.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function buildWebSiteNode(): array
+	{
+		$homeUrl = \home_url('/');
+		$name    = (string) Options::getOption(['siteRepresentation', 'name']);
+		if ($name === '') {
+			$name = (string) \get_bloginfo('name');
+		}
+
+		return [
+			'@type'       => 'WebSite',
+			'@id'         => $homeUrl . '#website',
+			'url'         => $homeUrl,
+			'name'        => $name,
+			'inLanguage'  => \get_bloginfo('language'),
+		];
 	}
 
 	/**

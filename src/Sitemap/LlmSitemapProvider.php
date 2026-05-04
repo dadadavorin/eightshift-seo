@@ -149,11 +149,16 @@ class LlmSitemapProvider implements ServiceInterface
 
 		$urls = [];
 
+		$perTypeLimit = (int) Options::getOption(['llmsTxt', 'perTypeLimit']);
+		if ($perTypeLimit <= 0) {
+			$perTypeLimit = 200;
+		}
+
 		foreach ($postTypes as $postType) {
 			$posts = \get_posts([
 				'post_type'      => $postType,
 				'post_status'    => 'publish',
-				'posts_per_page' => 2000,
+				'posts_per_page' => $perTypeLimit,
 				'orderby'        => 'modified',
 				'order'          => 'DESC',
 				'meta_query'     => [

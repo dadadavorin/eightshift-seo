@@ -136,7 +136,7 @@ export const ToolsTab = ({ settings, onChange }) => {
 						label={__('API key', 'eightshift-seo')}
 						help={
 							keyFileUrl
-								? `${__('Key file served at:', 'eightshift-seo')} ${keyFileUrl}`
+								? <>{__('Key file served at:', 'eightshift-seo')}{' '}<a href={keyFileUrl} target="_blank" rel="noreferrer noopener">{keyFileUrl}</a></>
 								: __('Key will be auto-generated on save.', 'eightshift-seo')
 						}
 						value={indexNow.key || ''}

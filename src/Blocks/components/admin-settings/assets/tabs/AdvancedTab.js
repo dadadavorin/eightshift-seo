@@ -140,13 +140,15 @@ export const AdvancedTab = ({ settings, onChange }) => {
 
 			{(!taxonomies || taxonomies.length === 0) ? (
 				<p>{__('No public taxonomies found.', 'eightshift-seo')}</p>
-			) : (
-				taxonomies.map((tax) => {
-					const current = taxRobots[tax.slug] ?? {};
+			) : (() => {
+				const taxNameCounts = taxonomies.reduce((acc, t) => { acc[t.name] = (acc[t.name] ?? 0) + 1; return acc; }, {});
+				return taxonomies.map((tax) => {
+					const current  = taxRobots[tax.slug] ?? {};
+					const taxLabel = taxNameCounts[tax.name] > 1 ? `${tax.name} (${tax.slug})` : tax.name;
 
 					return (
 						<div key={tax.slug} style={{ marginBottom: '16px' }}>
-							<h4 style={{ margin: '0 0 6px' }}>{tax.name}</h4>
+							<h4 style={{ margin: '0 0 6px' }}>{taxLabel}</h4>
 
 							<CheckboxControl
 								label={__('noindex — exclude archives from search engines', 'eightshift-seo')}
@@ -191,8 +193,8 @@ export const AdvancedTab = ({ settings, onChange }) => {
 							/>
 						</div>
 					);
-				})
-			)}
+				});
+			})()}
 
 			<hr />
 

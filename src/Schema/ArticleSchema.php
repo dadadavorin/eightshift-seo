@@ -251,7 +251,10 @@ class ArticleSchema implements ServiceInterface
 					\E_USER_NOTICE
 				);
 			}
-			$title = \mb_substr($title, 0, 110);
+			// Trim at word boundary so the headline never ends mid-word.
+			$trimmed   = \mb_substr($title, 0, 110);
+			$lastSpace = \mb_strrpos($trimmed, ' ');
+			$title     = $lastSpace !== false ? \mb_substr($trimmed, 0, $lastSpace) : $trimmed;
 		}
 
 		return $title;

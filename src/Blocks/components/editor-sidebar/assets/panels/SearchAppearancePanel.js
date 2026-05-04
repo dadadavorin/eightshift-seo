@@ -42,7 +42,7 @@ export const SearchAppearancePanel = ({ getMeta, setMetaKey }) => {
 
 			<TextControl
 				label={__('SEO title', 'eightshift-seo')}
-				help={charCounter(seoTitle.length, 60)}
+				help={charCounter(seoTitle ? seoTitle.length : previewTitle.length, 60)}
 				value={seoTitle}
 				onChange={(val) => setMetaKey('title', val)}
 				placeholder={previewTitle}
